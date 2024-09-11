@@ -16,7 +16,7 @@ add_subdirectory(gpu)
 include_directories(gpu)
 add_subdirectory(utils)
 include_directories(utils)
-add_subdirectory(drawable)
+add_subdirectory(drawable) 
 include_directories(drawable)
 # Specify MSVC UTF-8 encoding    
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
