@@ -15,7 +15,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_subdirectory(gpu)
 include_directories(gpu)
 add_subdirectory(utils)
-include_directories(utils)
+include_directories(utils) 
 add_subdirectory(drawable) 
 include_directories(drawable)
 # Specify MSVC UTF-8 encoding    
