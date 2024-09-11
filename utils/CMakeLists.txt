@@ -1,0 +1,5 @@
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+file(GLOB_RECURSE utils *.cpp *.h)
+add_library(utilsLib ${utils})
+target_link_libraries(utilsLib Qt6::Core Qt6::Gui) 

@@ -1,0 +1,6 @@
+set(CMAKE_CXX_STANDARD 17)
+include_directories(${PROJECT_SOURCE_DIR}/utils)
+include_directories(${PROJECT_SOURCE_DIR}/gpu)
+file(GLOB_RECURSE drawable *.cpp *.h)
+add_library(drawableLib ${drawable})
+target_link_libraries(drawableLib utilsLib GPULib)

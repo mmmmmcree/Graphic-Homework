@@ -1,0 +1,5 @@
+set(CMAKE_CXX_STANDARD 17)
+include_directories(${PROJECT_SOURCE_DIR}/utils)
+file(GLOB_RECURSE gpu *.cpp *.h)
+add_library(GPULib ${gpu})
+target_link_libraries(GPULib utilsLib)
