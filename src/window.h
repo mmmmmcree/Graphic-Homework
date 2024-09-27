@@ -1,6 +1,5 @@
 #pragma once
 #include <QMainWindow>
-#include <QTimer>
 
 class window : public QMainWindow {
     Q_OBJECT
@@ -8,6 +7,4 @@ class window : public QMainWindow {
 public:
     window(QWidget* parent = nullptr);
     ~window();
-private:
-    QTimer* timer;
 };

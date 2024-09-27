@@ -1,17 +1,21 @@
 #include "window.h"
-#include "SDLWidget.h"
+#include <QTabWidget>
+#include "Canvas/Canvas.h"
+#include "GLWidget/GLWidget.h"
 
 window::window(QWidget* parent)
     : QMainWindow(parent)
 {
-    auto widget = new SDLWidget(this);
-    this->setCentralWidget(widget);
+    QTabWidget *tab_widget = new QTabWidget(this);
+    // 先创建GLWidget，再创建Canvas，否则产生冲突
+    GLWidget *gl_widget = new GLWidget(this);
+    Canvas *canvas = new Canvas(this);
+    tab_widget->addTab(canvas, "Canvas");
+    tab_widget->addTab(gl_widget, "GL");
+    tab_widget->setTabsClosable(false);
+    tab_widget->setDocumentMode(true);
+    this->setCentralWidget(tab_widget);
     this->resize(800, 600);
-    timer = new QTimer(this);
-    timer->setInterval(1000 / 60);
-    connect(timer, &QTimer::timeout, widget, [=] {
-        widget->update();
-    });
 }
 
 window::~window()
