@@ -1,38 +1,71 @@
 #include "Canvas.h"
-#include "SDLWidget.h"
-#include <QLayout>
-#include <QToolBar>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QColorDialog>
-#include <QPushButton>
+#include <QTimer>
+#include "GPU.h"
 
 
 Canvas::Canvas(QWidget * parent) : QWidget(parent)
 {
-    QToolBar *toolbar = new QToolBar(this);
-    toolbar->setFixedHeight(25);
-    QPushButton *color_selector = new QPushButton("Color Selector", this);
-    QComboBox *drawable_selector = new QComboBox(this);
-    drawable_selector->addItems({"Line", "Circle", "CircleArc"});
-    QSpinBox *pixel_size_selector = new QSpinBox(this);
-    pixel_size_selector->setRange(1, 20);
-    toolbar->addWidget(color_selector);
-    toolbar->addSeparator();
-    toolbar->addWidget(drawable_selector);
-    toolbar->addSeparator();
-    toolbar->addWidget(pixel_size_selector);
-    SDLWidget *sdl_widget = new SDLWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(toolbar);
-    layout->addWidget(sdl_widget);
-    this->setLayout(layout);
-    QColorDialog *color_dialog = new QColorDialog(this);
-    connect(color_selector, &QPushButton::clicked, color_dialog, &QColorDialog::show);
-    connect(color_dialog, &QColorDialog::currentColorChanged, sdl_widget, [](const QColor &color) {
-        Color::setGlobalColor(Color(color.red(), color.green(), color.blue()));
-    });
-    connect(drawable_selector, &QComboBox::currentIndexChanged, sdl_widget, &SDLWidget::setCurrentDrawableType);
-    connect(pixel_size_selector, &QSpinBox::valueChanged, sdl_widget, &SDLWidget::setCurrentDrawablePixelSize);
+    this->setMouseTracking(true);
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this] { this->update(); });
+    timer->start(1000 / 60);
+    m_drawable = Drawable::create(Drawable::LINE, m_pixel_size);
+    connect(m_drawable, &Drawable::finished, this, &Canvas::onPaintingFinished);
+}
+
+Canvas::~Canvas()
+{
+}
+
+void Canvas::onPaintingFinished()
+{
+    m_drawables.emplace_back(m_drawable);
+    m_drawable = Drawable::create(static_cast<Drawable::Type>(m_drawable_type), m_pixel_size);
+    connect(m_drawable, &Drawable::finished, this, &Canvas::onPaintingFinished);
+}
+
+void Canvas::setCurrentDrawableType(int type)
+{
+    m_drawable_type = type;
+    if (m_drawable) { delete m_drawable; }
+    m_drawable = Drawable::create(static_cast<Drawable::Type>(type), m_pixel_size);
+    connect(m_drawable, &Drawable::finished, this, &Canvas::onPaintingFinished);
+}
+
+void Canvas::setCurrentDrawablePixelSize(int pixel_size)
+{
+    m_pixel_size = pixel_size;
+    if (m_drawable) { m_drawable->setPixelSize(pixel_size); }
+}
+
+void Canvas::paintEvent(QPaintEvent *event)
+{
+    auto [width, height] = gpu->bufferSize();
+    gpu->clearColor(Qt::black);
+    if (m_drawable) { m_drawable->draw(); }
+    for (const auto &drawable : m_drawables) {
+        drawable->draw();
+    }
+    gpu->updateDevice(this);
+}
+
+void Canvas::resizeEvent(QResizeEvent *event)
+{
+    auto [width, height] = event->size();
+    gpu->resize(width, height);
+}
+
+void Canvas::mousePressEvent(QMouseEvent *event)
+{
+    if (m_drawable) { m_drawable->processMousePressEvent(event); }
+}
+
+void Canvas::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_drawable) { m_drawable->processMouseMoveEvent(event); }
+}
+
+void Canvas::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (m_drawable) { m_drawable->processMouseReleaseEvent(event); }
 }

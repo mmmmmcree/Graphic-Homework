@@ -19,7 +19,7 @@ void Circle::processMousePressEvent(QMouseEvent *event)
     if (this->uninitialized()) {
         m_x = x;
         m_y = y;
-        m_color = Color::globalColor();
+        m_color = globalColor();
     }
     --m_draw_step;
 }

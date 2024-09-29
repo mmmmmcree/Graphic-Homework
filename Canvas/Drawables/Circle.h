@@ -16,6 +16,6 @@ private:
 private:
     int m_x, m_y;
     int m_radius;
-    Color m_color;
+    QColor m_color;
     int m_draw_step = 2;
 };

@@ -35,7 +35,7 @@ void CircleArc::processMousePressEvent(QMouseEvent *event)
     if (m_draw_step == 3) {
         m_x = x;
         m_y = y;
-        m_color = Color::globalColor();
+        m_color = globalColor();
     }
     m_reversed = (m_draw_step == 1 and event->button() == Qt::RightButton);
     --m_draw_step;

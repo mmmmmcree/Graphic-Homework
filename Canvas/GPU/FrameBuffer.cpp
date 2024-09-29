@@ -1,40 +1,56 @@
 #include "FrameBuffer.h"
 
-FrameBuffer::FrameBuffer(int width, int height) : m_color_buffer(width * height)
+FrameBuffer::FrameBuffer()
 {
+    m_color_buffer = new QImage(0, 0, QImage::Format_RGB32);
 }
 
-uint32_t *FrameBuffer::colorData()
+FrameBuffer::FrameBuffer(int width, int height)
 {
-    return m_color_buffer.data();
+    m_color_buffer = new QImage(width, height, QImage::Format_RGB32);
+}
+
+FrameBuffer::~FrameBuffer()
+{
+    if (m_color_buffer) { delete m_color_buffer; }
+}
+
+
+QImage *FrameBuffer::colorBuffer() const
+{
+    return m_color_buffer;
 }
 
 void FrameBuffer::resize(int width, int height)
 {
-    if (m_width == width and m_height == height) { return; }
+    if (this->width() == width and this->height() == height) { return; }
     if (width <= 0 or height <= 0) { return; }
-    m_width = width;
-    m_height = height;
-    m_color_buffer.resize(width * height);
+    if (m_color_buffer) { delete m_color_buffer; }
+    m_color_buffer = new QImage(width, height, QImage::Format_RGB32);
 }
 
-void FrameBuffer::clearColor(const Color &color)
+void FrameBuffer::clearColor(const QColor &color)
 {
-    std::fill_n(m_color_buffer.begin(), m_color_buffer.size(), color.rgba());
+    m_color_buffer->fill(color);
 }
 
-void FrameBuffer::setPixel(int x, int y, const Color &color)
+void FrameBuffer::setPixel(int x, int y, const QColor &color)
 {
-    if (x < 0 or x >= m_width or y < 0 or y >= m_height) { return; }
-    m_color_buffer[y * m_width + x] = color.rgba();
+    m_color_buffer->setPixel(x, y, color.rgba());
 }
 
 int FrameBuffer::width() const
 {
-    return m_width;
+    return m_color_buffer->width();
 }
 
 int FrameBuffer::height() const
 {
-    return m_height;
+    return m_color_buffer->height();
 }
+
+std::pair<int, int> FrameBuffer::size() const
+{
+    return std::make_pair(this->width(), this->height());
+}
+

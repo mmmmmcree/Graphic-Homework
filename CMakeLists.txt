@@ -24,5 +24,4 @@ add_executable(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets CanvasLib GLWidgetLib
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/SDL2.lib
 )

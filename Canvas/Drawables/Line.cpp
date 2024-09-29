@@ -3,8 +3,8 @@
 Line::Line(int pixel_size)
 {
     this->setPixelSize(pixel_size);
-    m_start = {-1, -1, Color::globalColor()};
-    m_end = {-1, -1, Color::globalColor()};
+    m_start = {-1, -1, globalColor()};
+    m_end = {-1, -1, globalColor()};
 }
 
 void Line::draw()
@@ -17,7 +17,7 @@ void Line::processMousePressEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();
     if (this->uninitialized()) {
-       m_start = m_end = {x, y, Color::globalColor()};
+       m_start = m_end = {x, y, globalColor()};
     }
     --m_draw_step;
 }
@@ -26,7 +26,7 @@ void Line::processMouseMoveEvent(QMouseEvent *event)
 {
     if (this->uninitialized()) { return; }
     auto [x, y] = event->pos();
-    m_end = {x, y, Color::globalColor()};
+    m_end = {x, y, globalColor()};
 }
 
 void Line::processMouseReleaseEvent(QMouseEvent *event)

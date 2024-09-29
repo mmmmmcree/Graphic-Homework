@@ -8,6 +8,5 @@ file(GLOB_RECURSE Canvas *.cpp *.h)
 add_library(CanvasLib ${Canvas})
 target_link_libraries(
     CanvasLib Qt6::Widgets UtilsLib GPULib DrawablesLib
-    ${PROJECT_SOURCE_DIR}/lib/SDL2.lib
 )
 
