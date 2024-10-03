@@ -24,6 +24,16 @@ std::pair<int,int> GPU::bufferSize() const
     return std::make_pair(m_frame_buffer.width(), m_frame_buffer.height());
 }
 
+Shader *GPU::currentShader() const
+{
+    return m_shader;
+}
+
+void GPU::useShader(Shader *shader)
+{
+    m_shader = shader;
+}
+
 void GPU::clearColor(const QColor &color)
 {
     m_frame_buffer.clearColor(color);
@@ -32,4 +42,9 @@ void GPU::clearColor(const QColor &color)
 void GPU::drawPixel(const Pixel &pixel)
 {
     m_frame_buffer.setPixel(pixel._x, pixel._y, pixel._color);
+}
+
+void GPU::drawPixels(const Pixels & pixels)
+{
+    for (const auto &pixel : pixels) { this->drawPixel(pixel); }
 }

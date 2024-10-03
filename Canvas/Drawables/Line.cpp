@@ -3,8 +3,7 @@
 Line::Line(int pixel_size)
 {
     this->setPixelSize(pixel_size);
-    m_start = {-1, -1, globalColor()};
-    m_end = {-1, -1, globalColor()};
+    m_start = m_end = {-1, -1, globalColor()};
 }
 
 void Line::draw()

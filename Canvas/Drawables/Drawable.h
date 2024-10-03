@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QMouseEvent>
+#include "Color.h"
 #include "../GPU/GPU.h"
 #include "../GPU/Raster.h"
 
@@ -14,6 +15,8 @@ public:
         LINE,
         CIRCLE,
         CIRCLE_ARC,
+        RECT,
+        FILLED_RECT,
     };
     static Drawable *create(Type type, int pixel_size);
 public:
@@ -26,6 +29,7 @@ protected:
     void drawLine(const Pixel &start, const Pixel &end, int pixel_size);
     void drawCircle(const Pixel &center, int radius, int pixel_size);
     void drawCircleArc(const Pixel &center, int radius, float start_angle, float end_angle, int pixel_size, bool reversed = false);
+    void drawRect(const Pixel &start, const Pixel &end, int pixel_size);
 signals:
     void finished();
 protected:

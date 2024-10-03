@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QResizeEvent>
+#include <QElapsedTimer>
 #include <memory>
 #include "Drawables/Drawables.h"
 
@@ -12,6 +13,7 @@ public:
     ~Canvas();
     void setCurrentDrawableType(int type);
     void setCurrentDrawablePixelSize(int pixel_size);
+    void setCurrentShader(int shader_index);
 protected:
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event) override;
@@ -21,8 +23,12 @@ protected:
 private slots:
     void onPaintingFinished();
 private:
+    QElapsedTimer m_elapsed_timer;
     Drawable *m_drawable;
     std::vector<Drawable*> m_drawables;
     int m_drawable_type = 0;
     int m_pixel_size = 1;
+
+    // Shader *m_shader = nullptr;
+    std::vector<Shader*> m_shaders;
 };

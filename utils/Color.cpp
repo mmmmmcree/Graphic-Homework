@@ -8,6 +8,7 @@ QColor operator+(const QColor &lhs, const QColor &rhs) {
         std::min(lhs.alpha() + rhs.alpha(), 255)
     );
 }
+
 QColor operator*(const QColor &lhs, float t)
 {
     return QColor(
@@ -17,14 +18,26 @@ QColor operator*(const QColor &lhs, float t)
         std::min(static_cast<int>(lhs.alpha() * t), 255)
     );
 }
+
 QColor operator*(float t, const QColor &rhs)
 {
     return rhs * t;
 }
+
+QColor getColorFromVector(const QVector3D &vec)
+{
+    return QColor(
+        std::clamp(static_cast<int>(vec.x() * 255), 0, 255),
+        std::clamp(static_cast<int>(vec.y() * 255), 0, 255),
+        std::clamp(static_cast<int>(vec.z() * 255), 0, 255)
+    );
+}
+
 const QColor &globalColor()
 {
     return g_color;
 }
+
 void setGlobalColor(const QColor &color)
 {
     g_color = color;

@@ -7,8 +7,8 @@
 Pixels Raster::lineBresenham(const Pixel &p1, const Pixel &p2)
 {
     Pixels result;
-    auto [x1, y1, color1] = p1;
-    auto [x2, y2, color2] = p2;
+    auto [x1, y1] = p1.xy();
+    auto [x2, y2] = p2.xy();
     int dx = abs(x2 - x1), dy = abs(y2 - y1);
     int x = x1, y = y1; int step_x = (x1 < x2) ? 1 : -1;
     int step_y = (y1 < y2) ? 1 : -1;
@@ -17,7 +17,9 @@ Pixels Raster::lineBresenham(const Pixel &p1, const Pixel &p2)
     if (not use_x_step) { std::swap(dx, dy); }
     int p = 2 * dy - dx;
     for (int i = 0; i < n; ++i) {
-        result.emplace_back(x, y, lerp(color1, color2, (n - i) / static_cast<float>(n)));
+        Pixel pixel = lerp(p1, p2, (n - i) / static_cast<float>(n));
+        pixel.setXY(x, y);
+        result.emplace_back(pixel);
         if (p >= 0) {
             if (use_x_step) { y += step_y; } else { x += step_x; }
             p -= 2 * dx;
@@ -41,17 +43,15 @@ Pixels Raster::circleMidPoint(const Pixel &center, int radius)
         }
         result.append(eightCirclePoints(Pixel(x, y, center.color())));
     }
-    for (auto &[x, y, color] : result) {
-        x += center.x();
-        y += center.y();
+    for (auto &pixel : result) {
+        pixel.setXY(center.x() + pixel.x(), center.y() + pixel.y());
     }
     return result;
 }
-#include <QDebug>
+
 Pixels Raster::circleArcMidPoint(const Pixel &center, int radius, float start_angle, float end_angle, bool reversed)
 {
     Pixels result;
-    qDebug() << "circleArcMidPoint" << start_angle << ' ' << end_angle;
     if (start_angle > end_angle) { std::swap(start_angle, end_angle); }
     for (const auto &p : circleMidPoint(center, radius)) {
         float angle = qAtan2(p.y() - center.y(), p.x() - center.x());
@@ -65,12 +65,11 @@ Pixels Raster::circleArcMidPoint(const Pixel &center, int radius, float start_an
 Pixels Raster::eightCirclePoints(const Pixel &p)
 {
     Pixels result; result.reserve(8);
-    const auto &[x, y, color] = p;
     for (int i = 0; i < 2; ++i) {
         for (int j = 0; j < 2; ++j) {
             int x = pow(-1, i) * p.x(), y = pow(-1, j) * p.y();
-            result.emplace_back(x, y, color);
-            result.emplace_back(y, x, color);
+            result.emplace_back(x, y, p.color());
+            result.emplace_back(y, x, p.color());
         }
     }
     return result;
