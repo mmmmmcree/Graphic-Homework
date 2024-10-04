@@ -23,17 +23,18 @@ public slots:
     void setCurrentShader(int shader_index);
     void penDown(bool down);
     void selectDrawable(int index);
+    void deleteSelectedDrawable();
 private slots:
     void onPaintingFinished();
 private:
     void createDrawable();
 signals:
-    void drawablesSizeUpdated(int size);
+    void drawablesSizeUpdated(size_t size);
 private:
     QElapsedTimer m_elapsed_timer;
     Drawable *m_current_drawing = nullptr;
-    Drawable *m_selected_drawable = nullptr;
-    std::vector<Drawable*> m_drawables;
+    std::vector<std::unique_ptr<Drawable>> m_drawables;
+    int m_selected_drawable_index = -1;
     int m_drawable_type = 0;
     int m_pixel_size = 1;
     bool m_pen_down = false;

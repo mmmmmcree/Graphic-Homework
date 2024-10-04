@@ -8,7 +8,6 @@
 #include <QPushButton>
 #include "Color.h"
 
-
 CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
 {
     QToolBar *toolbar = new QToolBar(this);
@@ -25,6 +24,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     pen_down_button->setCheckable(true);
     QSpinBox *drawable_selector = new QSpinBox(this);
     drawable_selector->setRange(0, 0);
+    QPushButton *delete_button = new QPushButton("Delete", this);
     toolbar->addWidget(color_selector);
     toolbar->addSeparator();
     toolbar->addWidget(drawable_type_selector);
@@ -36,6 +36,8 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     toolbar->addWidget(pen_down_button);
     toolbar->addSeparator();    
     toolbar->addWidget(drawable_selector);
+    toolbar->addSeparator();
+    toolbar->addWidget(delete_button);
     Canvas *canvas = new Canvas(this);
     connect(canvas, &Canvas::drawablesSizeUpdated, drawable_selector, &QSpinBox::setMaximum);
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -52,7 +54,13 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     connect(pen_down_button, &QPushButton::toggled, canvas, [=](bool checked) {
         canvas->penDown(checked);
         drawable_selector->setEnabled(!checked);
-        if (not checked) { canvas->selectDrawable(-1); }
+        delete_button->setEnabled(!checked);
+        if (checked) { canvas->selectDrawable(-1); }
+        else { canvas->selectDrawable(drawable_selector->value()); }
     });
     connect(drawable_selector, &QSpinBox::valueChanged, canvas, &Canvas::selectDrawable);
+    connect(delete_button, &QPushButton::clicked, canvas, [=] {
+        canvas->deleteSelectedDrawable();
+        drawable_selector->setValue(0);
+    });
 }

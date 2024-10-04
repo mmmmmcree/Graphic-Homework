@@ -54,7 +54,9 @@ void Canvas::paintEvent(QPaintEvent *event)
     }
     auto [width, height] = gpu->bufferSize();
     gpu->clearColor(Qt::black);
-    if (m_selected_drawable) { m_selected_drawable->drawBorder(); }
+    if (m_selected_drawable_index != -1) {
+        m_drawables[m_selected_drawable_index]->drawBorder();
+    }
     for (const auto &drawable : m_drawables) {
         drawable->draw();
     }
@@ -86,16 +88,25 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event)
 void Canvas::penDown(bool down)
 {
     m_pen_down = down;
+    m_selected_drawable_index = -1;
     this->createDrawable();
 }
 
 void Canvas::selectDrawable(int index)
 {
     if (index <= 0 or index > m_drawables.size()) {
-        m_selected_drawable = nullptr;
+        m_selected_drawable_index = -1;
     } else {
-        m_selected_drawable = m_drawables[index - 1];
+        m_selected_drawable_index = index - 1;
     }
+}
+
+void Canvas::deleteSelectedDrawable()
+{
+    if (m_selected_drawable_index == -1) { return; }
+    m_drawables.erase(m_drawables.begin() + m_selected_drawable_index);
+    emit drawablesSizeUpdated(m_drawables.size());
+    m_selected_drawable_index = -1;
 }
 
 void Canvas::createDrawable()
