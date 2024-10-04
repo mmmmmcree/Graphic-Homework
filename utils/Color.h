@@ -9,7 +9,12 @@ QColor operator *(const QColor &lhs, float t);
 
 QColor operator *(float t, const QColor &rhs);
 
+QColor operator ~(const QColor &color);
+
 QColor getColorFromVector(const QVector3D &vec);
+
+// QColor reverse(const QColor &color);
+// QColor operator ~
 
 static QColor g_color = QColor(255, 255, 255);
 

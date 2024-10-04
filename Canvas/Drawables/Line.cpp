@@ -12,6 +12,12 @@ void Line::draw()
     Drawable::drawLine(m_start, m_end, m_pixel_size);
 }
 
+void Line::drawBorder()
+{
+    Pixel start(m_start.x(), m_start.y(), Qt::cyan), end(m_end.x(), m_end.y(), Qt::cyan);
+    Drawable::drawLine(start, end, m_pixel_size + 3);
+}
+
 void Line::processMousePressEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();

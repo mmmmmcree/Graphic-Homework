@@ -20,6 +20,12 @@ void Rect::draw()
     }
 }
 
+void Rect::drawBorder()
+{
+    Pixel start = {m_start.x(), m_start.y(), Qt::cyan}, end = {m_end.x(), m_end.y(), Qt::cyan};
+    this->drawRect(start, end, m_pixel_size + 3);
+}
+
 void Rect::processMousePressEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();

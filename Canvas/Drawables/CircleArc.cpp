@@ -29,6 +29,11 @@ void CircleArc::draw()
     Drawable::drawCircleArc({m_x, m_y, m_color}, m_radius, m_start_angle, m_end_angle, m_pixel_size, m_reversed);
 }
 
+void CircleArc::drawBorder()
+{
+    Drawable::drawCircleArc({m_x, m_y, Qt::cyan}, m_radius + 1, m_start_angle, m_end_angle, m_pixel_size + 2, m_reversed);
+}
+
 void CircleArc::processMousePressEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();

@@ -13,6 +13,11 @@ void Circle::draw()
     Drawable::drawCircle({m_x, m_y, m_color}, m_radius, m_pixel_size);
 }
 
+void Circle::drawBorder()
+{
+    Drawable::drawCircle({m_x, m_y, Qt::cyan}, m_radius + 1, m_pixel_size + 2);
+}
+
 void Circle::processMousePressEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();

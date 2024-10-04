@@ -24,6 +24,11 @@ QColor operator*(float t, const QColor &rhs)
     return rhs * t;
 }
 
+QColor operator~(const QColor &color)
+{
+    return QColor(255 - color.red(), 255 - color.green(), 255 - color.blue());
+}
+
 QColor getColorFromVector(const QVector3D &vec)
 {
     return QColor(

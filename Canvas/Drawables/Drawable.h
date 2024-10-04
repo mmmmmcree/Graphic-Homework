@@ -21,6 +21,7 @@ public:
     static Drawable *create(Type type, int pixel_size);
 public:
     virtual void draw() = 0;
+    virtual void drawBorder() = 0;
     virtual void processMousePressEvent(QMouseEvent *event) = 0;
     virtual void processMouseMoveEvent(QMouseEvent *event) = 0;
     virtual void processMouseReleaseEvent(QMouseEvent *event) = 0;

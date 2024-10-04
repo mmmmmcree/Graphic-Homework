@@ -9,8 +9,6 @@ Canvas::Canvas(QWidget * parent) : QWidget(parent)
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this] { this->update(); });
     timer->start(1000 / 60);
-    m_drawable = Drawable::create(Drawable::LINE, m_pixel_size);
-    connect(m_drawable, &Drawable::finished, this, &Canvas::onPaintingFinished);
     m_elapsed_timer.start();
     m_shaders = {new SimpleShader()};
 }
@@ -21,23 +19,22 @@ Canvas::~Canvas()
 
 void Canvas::onPaintingFinished()
 {
-    m_drawables.emplace_back(m_drawable);
-    m_drawable = Drawable::create(static_cast<Drawable::Type>(m_drawable_type), m_pixel_size);
-    connect(m_drawable, &Drawable::finished, this, &Canvas::onPaintingFinished);
+    m_drawables.emplace_back(m_current_drawing);
+    emit drawablesSizeUpdated(m_drawables.size());
+    m_current_drawing = nullptr;
+    this->createDrawable();
 }
 
 void Canvas::setCurrentDrawableType(int type)
 {
     m_drawable_type = type;
-    if (m_drawable) { delete m_drawable; }
-    m_drawable = Drawable::create(static_cast<Drawable::Type>(type), m_pixel_size);
-    connect(m_drawable, &Drawable::finished, this, &Canvas::onPaintingFinished);
+    this->createDrawable();
 }
 
 void Canvas::setCurrentDrawablePixelSize(int pixel_size)
 {
     m_pixel_size = pixel_size;
-    if (m_drawable) { m_drawable->setPixelSize(pixel_size); }
+    if (m_current_drawing) { m_current_drawing->setPixelSize(pixel_size); }
 }
 
 void Canvas::setCurrentShader(int shader_index)
@@ -47,9 +44,7 @@ void Canvas::setCurrentShader(int shader_index)
     } else {
         gpu->useShader(m_shaders[shader_index]);
     }
-    if (m_drawable) { delete m_drawable; }
-    m_drawable = Drawable::create(static_cast<Drawable::Type>(m_drawable_type), m_pixel_size);
-    connect(m_drawable, &Drawable::finished, this, &Canvas::onPaintingFinished);
+    this->createDrawable();
 }
 
 void Canvas::paintEvent(QPaintEvent *event)
@@ -59,10 +54,11 @@ void Canvas::paintEvent(QPaintEvent *event)
     }
     auto [width, height] = gpu->bufferSize();
     gpu->clearColor(Qt::black);
-    if (m_drawable) { m_drawable->draw(); }
+    if (m_selected_drawable) { m_selected_drawable->drawBorder(); }
     for (const auto &drawable : m_drawables) {
         drawable->draw();
     }
+    if (m_current_drawing) { m_current_drawing->draw(); }
     gpu->updateDevice(this);
 }
 
@@ -74,15 +70,41 @@ void Canvas::resizeEvent(QResizeEvent *event)
 
 void Canvas::mousePressEvent(QMouseEvent *event)
 {
-    if (m_drawable) { m_drawable->processMousePressEvent(event); }
+    if (m_current_drawing) { m_current_drawing->processMousePressEvent(event); }
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event)
 {
-    if (m_drawable) { m_drawable->processMouseMoveEvent(event); }
+    if (m_current_drawing) { m_current_drawing->processMouseMoveEvent(event); }
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_drawable) { m_drawable->processMouseReleaseEvent(event); }
+    if (m_current_drawing) { m_current_drawing->processMouseReleaseEvent(event); }
+}
+
+void Canvas::penDown(bool down)
+{
+    m_pen_down = down;
+    this->createDrawable();
+}
+
+void Canvas::selectDrawable(int index)
+{
+    if (index <= 0 or index > m_drawables.size()) {
+        m_selected_drawable = nullptr;
+    } else {
+        m_selected_drawable = m_drawables[index - 1];
+    }
+}
+
+void Canvas::createDrawable()
+{
+    if (m_current_drawing) {
+        delete m_current_drawing;
+        m_current_drawing = nullptr;
+    }
+    if (not m_pen_down) { return; }
+    m_current_drawing = Drawable::create(static_cast<Drawable::Type>(m_drawable_type), m_pixel_size);
+    connect(m_current_drawing, &Drawable::finished, this, &Canvas::onPaintingFinished);
 }
