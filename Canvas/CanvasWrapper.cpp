@@ -45,9 +45,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     this->setLayout(layout);
     QColorDialog *color_dialog = new QColorDialog(this);
     connect(color_selector, &QPushButton::clicked, color_dialog, &QColorDialog::show);
-    connect(color_dialog, &QColorDialog::currentColorChanged, canvas, [](const QColor &color) {
-        setGlobalColor(QColor(color.red(), color.green(), color.blue()));
-    });
+    connect(color_dialog, &QColorDialog::currentColorChanged, canvas, &setGlobalColor);
     connect(drawable_type_selector, &QComboBox::currentIndexChanged, canvas, &Canvas::setCurrentDrawableType);
     connect(pixel_size_selector, &QSpinBox::valueChanged, canvas, &Canvas::setCurrentDrawablePixelSize);
     connect(shader_selector, &QComboBox::currentIndexChanged, canvas, &Canvas::setCurrentShader);
