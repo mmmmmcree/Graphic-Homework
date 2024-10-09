@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Pixel.h"
+#include "TextureGenerator.h"
 
 struct Shader
 {

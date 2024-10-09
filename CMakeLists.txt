@@ -10,7 +10,7 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED) # Qt COMPONENTS
 aux_source_directory(./src srcs)
 add_subdirectory(Canvas)
 add_subdirectory(utils)
-add_subdirectory(GLWidget)
+add_subdirectory(GLService)
 include_directories(./include)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
@@ -23,5 +23,5 @@ add_executable(${PROJECT_NAME}
     res.qrc
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets CanvasLib GLWidgetLib
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets CanvasLib
 )

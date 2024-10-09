@@ -1,8 +1,8 @@
 <RCC>
 <qresource prefix="">
-    <file>GLWidget/shaders/simple.vert</file>
-    <file>GLWidget/shaders/simple.frag</file>
-    <file>GLWidget/shaders/seascape.frag</file>
-    <file>GLWidget/shaders/happy_jumping.frag</file>
+    <file>GLService/shaders/simple.vert</file>
+    <file>GLService/shaders/simple.frag</file>
+    <file>GLService/shaders/seascape.frag</file>
+    <file>GLService/shaders/happy_jumping.frag</file>
 </qresource>
 </RCC>

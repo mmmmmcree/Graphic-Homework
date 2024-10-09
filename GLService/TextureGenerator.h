@@ -17,8 +17,6 @@ public:
 private:
     void paintTextures();
 private:
-    static QOpenGLShaderProgram *loadShader(const QString &name, const QString &vs_name = "");
-private:
     inline static QList<QImage> s_textures = QList<QImage>(10);
 private:
     QOpenGLContext *m_context = nullptr;
@@ -27,5 +25,4 @@ private:
     // std::vector<QOpenGLShaderProgram *> m_shaders;
     QElapsedTimer m_elapsed_timer;
     QOpenGLFramebufferObject *m_fbo;
-    QList<QImage> m_textures;
 };

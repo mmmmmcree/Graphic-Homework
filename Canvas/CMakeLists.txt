@@ -1,6 +1,7 @@
 set(CMAKE_CXX_STANDARD 17)
 find_package(Qt6 REQUIRED COMPONENTS Widgets) 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/GLService)
 include_directories(${PROJECT_SOURCE_DIR}/utils ./GPU ./Drawables)
 add_subdirectory(./GPU)
 add_subdirectory(./Drawables)
