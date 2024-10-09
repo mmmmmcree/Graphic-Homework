@@ -5,6 +5,7 @@
 #include <QElapsedTimer>
 #include <memory>
 #include "Drawables/Drawables.h"
+#include "TextureGenerator.h"
 
 class Canvas : public QWidget {
     Q_OBJECT

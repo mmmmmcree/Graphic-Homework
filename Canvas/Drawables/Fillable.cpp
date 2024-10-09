@@ -12,5 +12,5 @@ void Fillable::drawFilledRect(const Pixel & start, const Pixel & end)
         pixels.append(Raster::lineBresenham(Pixel(x1, y, start.color(), 0.0f, v), Pixel(x2, y, end.color(), 1.0f, v)));
     }
     if (m_shader) { m_shader->fragment(pixels); }
-    gpu->drawPixels(pixels);
+    GPU::get()->drawPixels(pixels);
 }

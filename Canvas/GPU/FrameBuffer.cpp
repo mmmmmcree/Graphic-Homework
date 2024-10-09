@@ -1,4 +1,5 @@
 #include "FrameBuffer.h"
+#include <QPainter>
 
 FrameBuffer::FrameBuffer()
 {
@@ -37,6 +38,13 @@ void FrameBuffer::clearColor(const QColor &color)
 void FrameBuffer::setPixel(int x, int y, const QColor &color)
 {
     m_color_buffer->setPixel(x, y, color.rgba());
+}
+
+void FrameBuffer::setPixels(int x, int y, const QImage &image)
+{
+    QPainter painter(m_color_buffer);
+    y = this->height() - y - image.height();
+    painter.drawImage(x, y, image);
 }
 
 int FrameBuffer::width() const

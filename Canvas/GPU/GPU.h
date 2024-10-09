@@ -6,7 +6,6 @@
 #include <QPainter>
 #include "Shaders.h"
 
-#define gpu GPU::get()
 
 class GPU
 {
@@ -21,6 +20,7 @@ public:
     void clearColor(const QColor &color = {0, 0, 0});
     void drawPixel(const Pixel &pixel);
     void drawPixels(const Pixels &pixels);
+    void drawImage(int x, int y, const QImage &image);
 private:
     FrameBuffer m_frame_buffer;
     Shader *m_shader = nullptr;

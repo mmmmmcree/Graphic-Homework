@@ -16,3 +16,8 @@ QVector2D fract(const QVector2D &v)
 {
     return QVector2D(v.x() - std::floor(v.x()), v.y() - std::floor(v.y()));
 }
+
+QColor sample(const QImage &image, const QVector2D &uv)
+{
+    return image.pixelColor(uv.x() * image.width(), uv.y() * image.height());
+}

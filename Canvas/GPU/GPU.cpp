@@ -15,6 +15,7 @@ void GPU::resize(int width, int height)
 
 void GPU::updateDevice(QPaintDevice *device)
 {
+    //todo 可以改成直接使用opengl绘制纹理
     QPainter painter(device);
     painter.drawImage(0, 0, *m_frame_buffer.colorBuffer());
 }
@@ -47,4 +48,9 @@ void GPU::drawPixel(const Pixel &pixel)
 void GPU::drawPixels(const Pixels & pixels)
 {
     for (const auto &pixel : pixels) { this->drawPixel(pixel); }
+}
+
+void GPU::drawImage(int x, int y, const QImage &image)
+{
+    m_frame_buffer.setPixels(x, y, image);
 }

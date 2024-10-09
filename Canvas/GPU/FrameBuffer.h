@@ -13,6 +13,7 @@ public:
     void resize(int width, int height);
     void clearColor(const QColor& color);
     void setPixel(int x, int y, const QColor& color);
+    void setPixels(int x, int y, const QImage& image);
     int width() const;
     int height() const;
     std::pair<int, int> size() const;

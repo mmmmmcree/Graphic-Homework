@@ -8,7 +8,7 @@ Drawable *Drawable::create(Type type, int pixel_size)
         case CIRCLE: return new Circle(pixel_size);
         case CIRCLE_ARC: return new CircleArc(pixel_size);
         case RECT: return new Rect(pixel_size, false);
-        case FILLED_RECT: return new Rect(pixel_size, true, gpu->currentShader());
+        case FILLED_RECT: return new Rect(pixel_size, true, GPU::get()->currentShader());
     }
     return nullptr;
 }
@@ -31,7 +31,7 @@ void Drawable::drawLine(const Pixel &start, const Pixel &end, int pixel_size)
         Pixel e(end.x() + offset_x, end.y() + offset_y, end.color());
         pixels.append(Raster::lineBresenham(s, e));
     }
-    gpu->drawPixels(pixels);
+    GPU::get()->drawPixels(pixels);
 }
 
 void Drawable::drawCircle(const Pixel &center, int radius, int pixel_size)
@@ -42,7 +42,7 @@ void Drawable::drawCircle(const Pixel &center, int radius, int pixel_size)
         if (r <= 0) { continue; }
         pixels.append(Raster::circleMidPoint(center, radius + i));
     }
-    gpu->drawPixels(pixels);
+    GPU::get()->drawPixels(pixels);
 }
 
 void Drawable::drawCircleArc(const Pixel &center, int radius, float start_angle, float end_angle, int pixel_size, bool reversed)
@@ -53,7 +53,7 @@ void Drawable::drawCircleArc(const Pixel &center, int radius, float start_angle,
         if (r <= 0) { continue; }
         pixels.append(Raster::circleArcMidPoint(center, radius + i, start_angle, end_angle, reversed));
     }
-    gpu->drawPixels(pixels);
+    GPU::get()->drawPixels(pixels);
 }
 
 void Drawable::drawRect(const Pixel &start, const Pixel &end, int pixel_size)

@@ -1,6 +1,7 @@
 #include "Canvas.h"
 #include <QTimer>
 #include "GPU.h"
+#include "TextureGenerator.h"
 
 
 Canvas::Canvas(QWidget * parent) : QWidget(parent)
@@ -11,6 +12,8 @@ Canvas::Canvas(QWidget * parent) : QWidget(parent)
     timer->start(1000 / 60);
     m_elapsed_timer.start();
     m_shaders = {new SimpleShader()};
+    auto texture_generator = new TextureGenerator(this);
+    // m_texture_generator = new TextureGenerator(this);
 }
 
 Canvas::~Canvas()
@@ -40,9 +43,9 @@ void Canvas::setCurrentDrawablePixelSize(int pixel_size)
 void Canvas::setCurrentShader(int shader_index)
 {
     if (shader_index >= m_shaders.size() or shader_index < 0) {
-        gpu->useShader(nullptr);
+        GPU::get()->useShader(nullptr);
     } else {
-        gpu->useShader(m_shaders[shader_index]);
+        GPU::get()->useShader(m_shaders[shader_index]);
     }
     this->createDrawable();
 }
@@ -52,6 +55,7 @@ void Canvas::paintEvent(QPaintEvent *event)
     for (Shader *shader : m_shaders) {
         shader->iTime = m_elapsed_timer.elapsed() / 1000.0f;
     }
+    auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
     gpu->clearColor(Qt::black);
     if (m_selected_drawable_index != -1) {
@@ -67,7 +71,7 @@ void Canvas::paintEvent(QPaintEvent *event)
 void Canvas::resizeEvent(QResizeEvent *event)
 {
     auto [width, height] = event->size();
-    gpu->resize(width, height);
+    GPU::get()->resize(width, height);
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event)
