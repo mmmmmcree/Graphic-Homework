@@ -9,20 +9,30 @@
 #include <QImage>
 #include <QOffscreenSurface>
 
+
+
 class TextureGenerator : public QObject, protected QOpenGLFunctions_4_5_Core
 {
 public:
     TextureGenerator(QObject *parent);
-    static const QImage &getTexture(int index);
+    const QImage &getTexture(int index);
+    static void setParent(QObject *parent);
+    static TextureGenerator *get();
 private:
     void paintTextures();
 private:
-    inline static QList<QImage> s_textures = QList<QImage>(10);
+    inline static TextureGenerator *s_instance = nullptr;
 private:
     QOpenGLContext *m_context = nullptr;
     QOffscreenSurface *m_surface = nullptr;
-    QOpenGLShaderProgram *m_shader;
-    // std::vector<QOpenGLShaderProgram *> m_shaders;
+    struct ShaderInfo {
+        ShaderInfo(bool a, QOpenGLShaderProgram *s, const QImage &t) :
+            activated(a), shader(s), texture(t) {}
+        bool activated;
+        QOpenGLShaderProgram *shader = nullptr;
+        QImage texture;
+    };
+    QList<ShaderInfo> m_shader_infos;
     QElapsedTimer m_elapsed_timer;
     QOpenGLFramebufferObject *m_fbo;
 };

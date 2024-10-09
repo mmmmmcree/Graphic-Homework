@@ -3,7 +3,7 @@ out vec4 fragColor;
   
 uniform vec2 iResolution;
 uniform float iTime;
-uniform vec2 iMouse;
+// uniform vec2 iMouse;
 vec2 fragCoord = gl_FragCoord.xy;
 
 const int NUM_STEPS = 8;
@@ -186,7 +186,8 @@ vec3 getPixel(vec2 coord, float time) {
 
 // main
 void main() {
-    float time = iTime * 0.3 + iMouse.x*0.01;
+    // float time = iTime * 0.3 + iMouse.x*0.01;
+    float time = iTime * 0.3;
 	
 #ifdef AA
     vec3 color = vec3(0.0);

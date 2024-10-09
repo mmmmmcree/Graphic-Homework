@@ -12,8 +12,7 @@ Canvas::Canvas(QWidget * parent) : QWidget(parent)
     timer->start(1000 / 60);
     m_elapsed_timer.start();
     m_shaders = {new SimpleShader()};
-    auto texture_generator = new TextureGenerator(this);
-    // m_texture_generator = new TextureGenerator(this);
+    TextureGenerator::setParent(this);
 }
 
 Canvas::~Canvas()

@@ -9,6 +9,7 @@ QColor operator+(const QColor &lhs, const QColor &rhs) {
     );
 }
 
+
 QColor operator*(const QColor &lhs, float t)
 {
     return QColor(
@@ -24,6 +25,11 @@ QColor operator*(float t, const QColor &rhs)
     return rhs * t;
 }
 
+QColor operator*(const QColor &lhs, const QColor &rhs)
+{
+    return getColorFromVector(getVectorFromColor(lhs) * getVectorFromColor(rhs));
+}
+
 QColor operator~(const QColor &color)
 {
     return QColor(255 - color.red(), 255 - color.green(), 255 - color.blue());
@@ -35,6 +41,15 @@ QColor getColorFromVector(const QVector3D &vec)
         std::clamp(static_cast<int>(vec.x() * 255), 0, 255),
         std::clamp(static_cast<int>(vec.y() * 255), 0, 255),
         std::clamp(static_cast<int>(vec.z() * 255), 0, 255)
+    );
+}
+
+QVector3D getVectorFromColor(const QColor &color)
+{
+    return QVector3D(
+        static_cast<float>(color.red()) / 255.0f,
+        static_cast<float>(color.green()) / 255.0f,
+        static_cast<float>(color.blue()) / 255.0f
     );
 }
 

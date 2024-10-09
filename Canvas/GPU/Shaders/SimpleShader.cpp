@@ -10,5 +10,5 @@ void SimpleShader::fragment(Pixels & pixels)
 
 void SimpleShader::fragment(Pixel &pixel)
 {
-    pixel._color = sample(TextureGenerator::getTexture(0), pixel.uv());
+    pixel._color =lerp(sample(TextureGenerator::get()->getTexture(1), pixel.uv()), sample(TextureGenerator::get()->getTexture(0), pixel.uv()), 0.7f);
 }
