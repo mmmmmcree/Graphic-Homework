@@ -18,8 +18,8 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     QSpinBox *pixel_size_selector = new QSpinBox(this);
     pixel_size_selector->setRange(1, 20);
     QComboBox *shader_selector = new QComboBox(this);
-    shader_selector->addItems({"Simple", "None"});
-    shader_selector->setCurrentIndex(1);
+    shader_selector->addItems({"Happy Jumping", "Seascape", "None"});
+    shader_selector->setCurrentText("None");
     QPushButton *pen_down_button = new QPushButton("Pen Down", this);
     pen_down_button->setCheckable(true);
     QSpinBox *drawable_selector = new QSpinBox(this);

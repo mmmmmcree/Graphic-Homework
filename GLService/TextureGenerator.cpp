@@ -18,22 +18,46 @@ TextureGenerator::TextureGenerator(QObject *parent) : QObject(parent)
     m_fbo = new QOpenGLFramebufferObject(300, 200, QOpenGLFramebufferObject::CombinedDepthStencil);
     QStringList shader_names = {"happy_jumping", "seascape"};
     for (const auto &name : shader_names) {
-        m_shader_infos.emplace_back(true, GLHelper::loadShader(name, "simple"), QImage());
+        m_shader_infos.emplace_back(GLHelper::loadShader(name, "simple"), QImage());
     }
     for (auto &info : m_shader_infos) {
         auto &shader = info.shader;
         shader->bind();
         shader->setUniformValue("iResolution", QVector2D(300, 200));
     }
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &TextureGenerator::paintTextures);
-    timer->start(1000 / 30);
+    m_timer = new QTimer(this);
+    connect(m_timer, &QTimer::timeout, this, &TextureGenerator::paintTextures);
+}
+
+const QImage &TextureGenerator::textureAt(int index)
+{
+    return m_shader_infos.at(index).texture;
+}
+
+void TextureGenerator::start(int msec)
+{
+    m_timer->start(msec);
     m_elapsed_timer.start();
 }
 
-const QImage &TextureGenerator::getTexture(int index)
+
+
+void TextureGenerator::stop()
 {
-    return m_shader_infos.at(index).texture;
+    m_timer->stop();
+}
+
+void TextureGenerator::setActivated(int index, bool activated)
+{
+    if (index < 0 or index >= m_shader_infos.size()) { return; }
+    m_shader_infos[index].activated = activated;
+}
+
+void TextureGenerator::activateAll()
+{
+    for (auto &info : m_shader_infos) {
+        info.activated = true;
+    }
 }
 
 void TextureGenerator::setParent(QObject *parent)

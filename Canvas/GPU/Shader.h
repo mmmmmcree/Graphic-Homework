@@ -6,5 +6,5 @@
 struct Shader
 {
     virtual void fragment(Pixels &pixles) = 0;
-    float iTime;
+    int texture_unit = 0;
 };

@@ -15,18 +15,23 @@ class TextureGenerator : public QObject, protected QOpenGLFunctions_4_5_Core
 {
 public:
     TextureGenerator(QObject *parent);
-    const QImage &getTexture(int index);
     static void setParent(QObject *parent);
     static TextureGenerator *get();
+    const QImage &textureAt(int index);
+    void start(int msec);
+    void stop();
+    void setActivated(int index, bool activated);
+    void activateAll();
 private:
     void paintTextures();
 private:
     inline static TextureGenerator *s_instance = nullptr;
 private:
+    QTimer *m_timer = nullptr;
     QOpenGLContext *m_context = nullptr;
     QOffscreenSurface *m_surface = nullptr;
     struct ShaderInfo {
-        ShaderInfo(bool a, QOpenGLShaderProgram *s, const QImage &t) :
+        ShaderInfo(QOpenGLShaderProgram *s, const QImage &t, bool a = false) :
             activated(a), shader(s), texture(t) {}
         bool activated;
         QOpenGLShaderProgram *shader = nullptr;

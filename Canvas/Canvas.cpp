@@ -11,8 +11,15 @@ Canvas::Canvas(QWidget * parent) : QWidget(parent)
     connect(timer, &QTimer::timeout, this, [this] { this->update(); });
     timer->start(1000 / 60);
     m_elapsed_timer.start();
-    m_shaders = {new SimpleShader()};
+    m_shaders = {new SimpleShader(), new SimpleShader()};
+    m_shaders.resize(2);
+    for (int i = 0, n = m_shaders.size(); i < n; ++i) {
+        m_shaders[i] = new SimpleShader();
+        m_shaders[i]->texture_unit = i;
+    }
     TextureGenerator::setParent(this);
+    TextureGenerator::get()->activateAll();
+    TextureGenerator::get()->start(1000 / 30);
 }
 
 Canvas::~Canvas()
@@ -51,9 +58,6 @@ void Canvas::setCurrentShader(int shader_index)
 
 void Canvas::paintEvent(QPaintEvent *event)
 {
-    for (Shader *shader : m_shaders) {
-        shader->iTime = m_elapsed_timer.elapsed() / 1000.0f;
-    }
     auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
     gpu->clearColor(Qt::black);
