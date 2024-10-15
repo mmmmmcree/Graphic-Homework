@@ -13,16 +13,16 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     QToolBar *toolbar = new QToolBar(this);
     toolbar->setFixedHeight(25);
     QPushButton *color_selector = new QPushButton("Color Selector", this);
-    QComboBox *drawable_type_selector = new QComboBox(this);
+    drawable_type_selector = new QComboBox(this);
     drawable_type_selector->addItems({"Line", "Circle", "CircleArc", "Rectangle", "FilledRectangle"});
     QSpinBox *pixel_size_selector = new QSpinBox(this);
     pixel_size_selector->setRange(1, 20);
     QComboBox *shader_selector = new QComboBox(this);
     shader_selector->addItems({"Happy Jumping", "Seascape", "None"});
     shader_selector->setCurrentText("None");
-    QPushButton *pen_down_button = new QPushButton("Pen Down", this);
+    pen_down_button = new QPushButton("Pen Down", this);
     pen_down_button->setCheckable(true);
-    QSpinBox *drawable_selector = new QSpinBox(this);
+    drawable_selector = new QSpinBox(this);
     drawable_selector->setRange(0, 0);
     QPushButton *delete_button = new QPushButton("Delete", this);
     toolbar->addWidget(color_selector);
@@ -63,4 +63,25 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
         canvas->deleteSelectedDrawable();
         drawable_selector->setValue(0);
     });
+}
+
+void CanvasWrapper::wheelEvent(QWheelEvent *event)
+{
+    if (drawable_selector->isEnabled()) {
+        drawable_selector->stepBy(event->angleDelta().y() / 120);
+    }
+    event->accept();
+}
+
+void CanvasWrapper::keyPressEvent(QKeyEvent * event)
+{
+    if (event->key() >= Qt::Key_0 and event->key() <= Qt::Key_9) {
+        int index = event->key() - Qt::Key_0;
+        if (index < drawable_type_selector->count()) {
+            drawable_type_selector->setCurrentIndex(event->key() - Qt::Key_0);
+        }
+    }
+    switch(event->key()) {
+        case Qt::Key_Return : { pen_down_button->click(); } break;
+    }
 }

@@ -1,6 +1,7 @@
 #include "TextureGenerator.h"
 #include "Mesh.h"
 #include "GLHelper.h"
+#include <QCursor>
 
 
 
@@ -26,7 +27,8 @@ TextureGenerator::TextureGenerator(QObject *parent) : QObject(parent)
         shader->setUniformValue("iResolution", QVector2D(300, 200));
     }
     m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &TextureGenerator::paintTextures);
+    // todo 暂且关闭该功能。后续加入注意根据用户是否需要绘制动画增添一些设置，不要让动画一直被绘制
+    // connect(m_timer, &QTimer::timeout, this, &TextureGenerator::paintTextures);
 }
 
 const QImage &TextureGenerator::textureAt(int index)
@@ -80,6 +82,7 @@ void TextureGenerator::paintTextures()
         shader->bind();
         shader->setUniformValue("iTime", m_elapsed_timer.elapsed() / 1000.0f);
         shader->setUniformValue("iFrame", frame_count);
+        shader->setUniformValue("iMouse", QCursor::pos());
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Mesh::drawQuad(shader);

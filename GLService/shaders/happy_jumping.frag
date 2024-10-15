@@ -4,36 +4,12 @@ out vec4 fragColor;
 uniform vec2 iResolution;
 uniform float iTime;
 uniform int iFrame;
+uniform vec2 iMouse;
 vec2 fragCoord = gl_FragCoord.xy;
-
-// Copyright Inigo Quilez, 2019 - https://iquilezles.org/
-// I am the sole copyright owner of this Work.
-// You cannot host, display, distribute or share this Work neither
-// as it is or altered, here on Shadertoy or anywhere else, in any
-// form including physical and digital. You cannot use this Work in any
-// commercial or non-commercial product, website or project. You cannot
-// sell this Work and you cannot mint an NFTs of it or train a neural
-// network with it without permission. I share this Work for educational
-// purposes, and you can link to it, through an URL, proper attribution
-// and unmodified screenshot, as part of your educational material. If
-// these conditions are too restrictive please contact me and we'll
-// definitely work it out.
-
-
-// An animation test - a happy and blobby creature
-// jumping and looking around. It gets off-model very
-// often, but it looks good enough I think.
-//
-// Making-of with math/shader/art explanations (6 hours
-// long): https://www.youtube.com/watch?v=Cfe5UQ-1L9Q
-//
-// Buy a metal print here: https://www.redbubble.com/i/metal-print/Happy-Jumping-by-InigoQuilez/43594745.0JXQP
-
 
 
 #define AA 2  // Set AA to 1 if your machine is too slow
 
-//------------------------------------------------------------------
 
 
 // https://iquilezles.org/articles/smin
@@ -458,10 +434,10 @@ void main()
         // time coordinate (motion blurred, shutter=0.5)
         // see https://www.shadertoy.com/view/4sBGD1
         float d = 0.5+0.5*sin(fragCoord.x*147.0)*sin(fragCoord.y*131.0);
-        float time = iTime - 0.5*(1.0/24.0)*(float(m*AA+n)+d)/float(AA*AA);
+        float time = iTime - 0.5*(1.0/24.0)*(float(m*AA+n)+d)/float(AA*AA) + iMouse.x * 0.01;
 #else    
         vec2 p = (-iResolution.xy + 2.0*fragCoord)/iResolution.y;
-        float time = iTime;
+        float time = iTime + iMouse.x * 0.01;
 #endif
         time += -2.6;
         time *= 0.9;
