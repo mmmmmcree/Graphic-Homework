@@ -17,11 +17,12 @@ QColor getColorFromVector(const QVector3D &vec);
 
 QVector3D getVectorFromColor(const QColor &color);
 
-// QColor reverse(const QColor &color);
-// QColor operator ~
+static QColor g_color(Qt::white);
 
-static QColor g_color = QColor(255, 255, 255);
+static QColor g_background_color(Qt::black);
 
 const QColor &globalColor();
+
+const QColor &globalBackgroundColor();
 
 void setGlobalColor(const QColor &color);

@@ -58,6 +58,11 @@ const QColor &globalColor()
     return g_color;
 }
 
+const QColor &globalBackgroundColor()
+{
+    return g_background_color;
+}
+
 void setGlobalColor(const QColor &color)
 {
     g_color = color;

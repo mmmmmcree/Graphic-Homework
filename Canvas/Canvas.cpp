@@ -60,7 +60,7 @@ void Canvas::paintEvent(QPaintEvent *event)
 {
     auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
-    gpu->clearColor(Qt::black);
+    gpu->clearColor(globalBackgroundColor());
     if (m_selected_drawable_index != -1) {
         m_drawables[m_selected_drawable_index]->drawBorder();
     }
