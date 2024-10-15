@@ -25,6 +25,8 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     drawable_selector = new QSpinBox(this);
     drawable_selector->setRange(0, 0);
     QPushButton *delete_button = new QPushButton("Delete", this);
+    QPushButton *fill_button = new QPushButton("Fill", this);
+    QPushButton *unfill_button = new QPushButton("Unfill", this);
     toolbar->addWidget(color_selector);
     toolbar->addSeparator();
     toolbar->addWidget(drawable_type_selector);
@@ -38,6 +40,9 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     toolbar->addWidget(drawable_selector);
     toolbar->addSeparator();
     toolbar->addWidget(delete_button);
+    toolbar->addSeparator();
+    toolbar->addWidget(fill_button);
+    toolbar->addWidget(unfill_button);
     Canvas *canvas = new Canvas(this);
     connect(canvas, &Canvas::drawablesSizeUpdated, drawable_selector, &QSpinBox::setMaximum);
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -55,6 +60,8 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
         canvas->penDown(checked);
         drawable_selector->setEnabled(!checked);
         delete_button->setEnabled(!checked);
+        fill_button->setEnabled(!checked);
+        unfill_button->setEnabled(!checked);
         if (checked) { canvas->selectDrawable(-1); }
         else { canvas->selectDrawable(drawable_selector->value()); }
     });
@@ -62,6 +69,12 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     connect(delete_button, &QPushButton::clicked, canvas, [=] {
         canvas->deleteSelectedDrawable();
         drawable_selector->setValue(0);
+    });
+    connect(fill_button, &QPushButton::clicked, canvas, [=] {
+        canvas->setSelectedDrawableFilled(true, true);
+    });
+    connect(unfill_button, &QPushButton::clicked, canvas, [=] {
+        canvas->setSelectedDrawableFilled(false, true);
     });
 }
 

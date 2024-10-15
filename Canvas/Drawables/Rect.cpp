@@ -5,7 +5,6 @@
 Rect::Rect(int pixel_size, bool filled, Shader *shader)
 {
     this->setPixelSize(pixel_size);
-    m_filled = filled;
     m_shader = shader;
     m_start = m_end = {-1, -1, globalColor()};
 }
@@ -13,11 +12,8 @@ Rect::Rect(int pixel_size, bool filled, Shader *shader)
 void Rect::draw()
 {
     if (this->uninitialized()) { return; }
-    if (m_filled) {
-        this->drawFilledRect(m_start, m_end);
-    } else {
-        this->drawRect(m_start, m_end, m_pixel_size);
-    }
+    this->drawRect(m_start, m_end, m_pixel_size);
+    m_filler.fill(this, m_shader);
 }
 
 void Rect::drawBorder()

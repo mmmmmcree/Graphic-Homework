@@ -6,5 +6,5 @@ file(GLOB_RECURSE Drawables *.cpp *.h)
 add_library(DrawablesLib ${Drawables})
 target_link_libraries(
     DrawablesLib Qt6::Core Qt6::Gui UtilsLib GPULib
-)
+) 
 

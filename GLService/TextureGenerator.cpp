@@ -28,7 +28,7 @@ TextureGenerator::TextureGenerator(QObject *parent) : QObject(parent)
     }
     m_timer = new QTimer(this);
     // todo 暂且关闭该功能。后续加入注意根据用户是否需要绘制动画增添一些设置，不要让动画一直被绘制
-    // connect(m_timer, &QTimer::timeout, this, &TextureGenerator::paintTextures);
+    connect(m_timer, &QTimer::timeout, this, &TextureGenerator::paintTextures);
 }
 
 const QImage &TextureGenerator::textureAt(int index)

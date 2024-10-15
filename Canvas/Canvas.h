@@ -24,16 +24,18 @@ public slots:
     void penDown(bool down);
     void selectDrawable(int index);
     void deleteSelectedDrawable();
+    void setSelectedDrawableFilled(bool filled, bool use_gcolor);
 private slots:
     void onPaintingFinished();
 private:
     void createDrawable();
+    Drawable *selectedDrawable() const;
 signals:
     void drawablesSizeUpdated(size_t size);
 private:
     QElapsedTimer m_elapsed_timer;
     Drawable *m_current_drawing = nullptr;
-    std::vector<std::unique_ptr<Drawable>> m_drawables;
+    std::vector<Drawable*> m_drawables;
     int m_selected_drawable_index = -1;
     int m_drawable_type = 0;
     int m_pixel_size = 1;

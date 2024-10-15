@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Drawable.h"
+#include "Fillable.h"
 #include "../GPU/Pixel.h"
 
-class Circle : public Drawable
+class Circle : public Fillable
 {
+    friend class Filler;
 public:
-    Circle(int pixel_size);
+    Circle(int pixel_size, Shader *shader = nullptr);
     void draw() override;
     void drawBorder() override;
     void processMousePressEvent(QMouseEvent *event) override;

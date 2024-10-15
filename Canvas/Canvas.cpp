@@ -61,8 +61,9 @@ void Canvas::paintEvent(QPaintEvent *event)
     auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
     gpu->clearColor(globalBackgroundColor());
-    if (m_selected_drawable_index != -1) {
-        m_drawables[m_selected_drawable_index]->drawBorder();
+    auto seleted_drawable = this->selectedDrawable();
+    if (seleted_drawable) {
+        seleted_drawable->drawBorder();
     }
     for (const auto &drawable : m_drawables) {
         drawable->draw();
@@ -110,10 +111,21 @@ void Canvas::selectDrawable(int index)
 
 void Canvas::deleteSelectedDrawable()
 {
-    if (m_selected_drawable_index == -1) { return; }
+    auto drawable = this->selectedDrawable();
+    if (not drawable) { return; }
     m_drawables.erase(m_drawables.begin() + m_selected_drawable_index);
+    delete drawable; drawable = nullptr;
     emit drawablesSizeUpdated(m_drawables.size());
     m_selected_drawable_index = -1;
+}
+
+void Canvas::setSelectedDrawableFilled(bool filled, bool use_gcolor)
+{
+    auto selected_drawable = this->selectedDrawable();
+    if (not selected_drawable or not selected_drawable->fillable()) { return; }
+    Fillable *selected_fillable = static_cast<Fillable*>(selected_drawable);
+    selected_fillable->setShader(GPU::get()->currentShader());
+    selected_fillable->setFill(filled, use_gcolor);
 }
 
 void Canvas::createDrawable()
@@ -125,4 +137,11 @@ void Canvas::createDrawable()
     if (not m_pen_down) { return; }
     m_current_drawing = Drawable::create(static_cast<Drawable::Type>(m_drawable_type), m_pixel_size);
     connect(m_current_drawing, &Drawable::finished, this, &Canvas::onPaintingFinished);
+}
+
+Drawable *Canvas::selectedDrawable() const
+{
+    if (m_selected_drawable_index < 0 or m_selected_drawable_index >= m_drawables.size())
+    { return nullptr; }
+    return m_drawables[m_selected_drawable_index];
 }

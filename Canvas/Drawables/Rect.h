@@ -1,7 +1,9 @@
 #include "Fillable.h"
+#include "Filler.h"
 
 class Rect : public Fillable
 {
+    friend class Filler;
 public:
     Rect(int pixel_size, bool filled = false, Shader *shader = nullptr);
     void draw() override;
@@ -14,4 +16,5 @@ private:
 private:
     Pixel m_start, m_end;
     int m_draw_step = 2;
+    // Filler m_filler;
 };

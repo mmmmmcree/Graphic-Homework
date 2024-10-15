@@ -1,7 +1,8 @@
 #include "Circle.h"
 
-Circle::Circle(int pixel_size)
+Circle::Circle(int pixel_size, Shader *shader)
 {
+    m_shader = shader;
     this->setPixelSize(pixel_size);
     m_x = m_y = -1;
     m_radius = 0;
@@ -11,6 +12,7 @@ void Circle::draw()
 {
     if (this->uninitialized()) { return; }
     Drawable::drawCircle({m_x, m_y, m_color}, m_radius, m_pixel_size);
+    m_filler.fill(this, m_shader);
 }
 
 void Circle::drawBorder()

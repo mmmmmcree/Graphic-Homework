@@ -30,7 +30,7 @@ Pixels Raster::lineBresenham(const Pixel &p1, const Pixel &p2)
     return result;
 }
 
-Pixels Raster::circleMidPoint(const Pixel &center, int radius)
+Pixels Raster::circleMidPoint(const Pixel &center, int radius, bool filled)
 {
     Pixels result;
     int x = 0, y = radius, e = 1 - radius;
@@ -41,7 +41,20 @@ Pixels Raster::circleMidPoint(const Pixel &center, int radius)
             e += 2 * (x - y) + 5;
             --y;
         }
-        result.append(eightCirclePoints(Pixel(x, y, center.color())));
+        Pixels pixels = eightCirclePoints(Pixel(y, x, center.color()));
+        if (not filled) {
+            result.append(pixels);
+            continue;
+        }
+        for (int i = 0; i < 8; i += 2) {
+            for (int j = 0; j < 2; ++j) {
+                auto &pixel = pixels[i + j];
+                float u = (pixel.x() + radius) / (2.0f * radius);
+                float v = (pixel.y() + radius) / (2.0f * radius);
+                pixel.setUV(u, v);
+            }
+            result.append(lineBresenham(pixels[i], pixels[i + 1]));
+        }
     }
     for (auto &pixel : result) {
         pixel.setXY(center.x() + pixel.x(), center.y() + pixel.y());
@@ -65,12 +78,22 @@ Pixels Raster::circleArcMidPoint(const Pixel &center, int radius, float start_an
 Pixels Raster::eightCirclePoints(const Pixel &p)
 {
     Pixels result; result.reserve(8);
-    for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            int x = pow(-1, i) * p.x(), y = pow(-1, j) * p.y();
-            result.emplace_back(x, y, p.color());
-            result.emplace_back(y, x, p.color());
-        }
-    }
+    int x = p.x(), y = p.y();
+    auto [u, v] = p.uv();
+    result.emplace_back(x, y, p.color(), u, v);
+    result.emplace_back(-x, y, p.color(), -u, v);
+    result.emplace_back(y, x, p.color(), v, u);
+    result.emplace_back(-y, x, p.color(), -v, u);
+    result.emplace_back(y, -x, p.color(), v, -u);
+    result.emplace_back(-y, -x, p.color(), -v, -u);
+    result.emplace_back(x, -y, p.color(), u, -v);
+    result.emplace_back(-x, -y, p.color(), -u, -v);
+    // for (int i = 0; i < 2; ++i) {
+    //     for (int j = 0; j < 2; ++j) {
+    //         int x = pow(-1, i) * p.x(), y = pow(-1, j) * p.y();
+    //         result.emplace_back(x, y, p.color());
+    //         result.emplace_back(y, x, p.color());
+    //     }
+    // }
     return result;
 }

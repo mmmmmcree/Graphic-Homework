@@ -25,6 +25,7 @@ public:
     virtual void processMousePressEvent(QMouseEvent *event) = 0;
     virtual void processMouseMoveEvent(QMouseEvent *event) = 0;
     virtual void processMouseReleaseEvent(QMouseEvent *event) = 0;
+    virtual bool fillable() { return false; }
     void setPixelSize(int pixel_size);
 protected:
     void drawLine(const Pixel &start, const Pixel &end, int pixel_size);
