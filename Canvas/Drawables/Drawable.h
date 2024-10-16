@@ -34,7 +34,8 @@ protected:
     void drawCircle(const Pixel &center, int radius, int pixel_size);
     void drawCircleArc(const Pixel &center, int radius, float start_angle, float end_angle, int pixel_size, bool reversed = false);
     void drawRect(const Pixel &start, const Pixel &end, int pixel_size);
-    void drawSeedFiller(const Pixel &start, const QColor &fillColor);
+    Pixels searchFillRange(const Pixel &start);
+    void fillRange(const Pixels &pixels, const QColor &fillColor);
 signals:
     void finished();
 protected:

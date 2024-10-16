@@ -17,4 +17,6 @@ private:
     Pixel m_start; 
     QColor m_fillColor;
     bool uninitialized() const;
+    Pixels m_savedPixels;
+    bool isChosen=false;
 };

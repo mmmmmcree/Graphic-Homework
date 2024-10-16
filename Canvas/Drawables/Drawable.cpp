@@ -70,7 +70,7 @@ void Drawable::drawRect(const Pixel &start, const Pixel &end, int pixel_size)
     this->drawLine(top_left, start, pixel_size);
 }
 
-void Drawable::drawSeedFiller(const Pixel &start, const QColor &fillColor)
+Pixels Drawable::searchFillRange(const Pixel &start)
 {
     auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
@@ -78,7 +78,7 @@ void Drawable::drawSeedFiller(const Pixel &start, const QColor &fillColor)
     QColor targetColor = gpu->getPixelColor(start.x(), start.y());
 
     std::queue<Pixel> pixelsQueue;
-    Pixels pixels;
+    Pixels pixels;  // 存储需要填充的像素
     std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false));
 
     pixelsQueue.push(start);
@@ -88,9 +88,7 @@ void Drawable::drawSeedFiller(const Pixel &start, const QColor &fillColor)
         Pixel current = pixelsQueue.front();
         pixelsQueue.pop();
 
-        Pixel filledPixel = current;
-        filledPixel.setColor(fillColor);
-        pixels.append(filledPixel);
+        pixels.append(current);  // 记录需要填充的像素
 
         std::vector<std::pair<int, int>> neighbors = {
             {current.x(), current.y() - 1}, // 上
@@ -112,8 +110,21 @@ void Drawable::drawSeedFiller(const Pixel &start, const QColor &fillColor)
             }
         }
     }
-    gpu->drawPixels(pixels);
-    pixelsQueue = std::queue<Pixel>();
-    visited.clear();
+
+    return pixels;  // 返回需要填充的所有像素
 }
 
+// 填充函数，根据提供的像素集合进行填充
+void Drawable::fillRange(const Pixels &pixels, const QColor &fillColor)
+{
+    auto &gpu = GPU::get();
+    Pixels filledPixels;
+
+    for (const Pixel &pixel : pixels) {
+        Pixel filledPixel = pixel;
+        filledPixel.setColor(fillColor);  // 设置填充颜色
+        filledPixels.append(filledPixel);
+    }
+
+    gpu->drawPixels(filledPixels);  // 执行绘制操作
+}
