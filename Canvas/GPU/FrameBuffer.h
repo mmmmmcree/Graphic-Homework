@@ -17,6 +17,7 @@ public:
     int width() const;
     int height() const;
     std::pair<int, int> size() const;
+    QColor getPixelColor(int x, int y) const; 
 private:
     QImage *m_color_buffer = nullptr;
 };
