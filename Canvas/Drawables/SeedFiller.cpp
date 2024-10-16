@@ -24,6 +24,7 @@ void SeedFiller::drawBorder()
 
 void SeedFiller::processMousePressEvent(QMouseEvent *event)
 {
+    m_fillColor = globalColor();
     auto [x, y] = event->pos();
     m_start = {x, y, m_fillColor}; // 设置起始点为鼠标点击位置，使用已保存的填充颜色
 
