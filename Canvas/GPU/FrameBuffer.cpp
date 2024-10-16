@@ -62,3 +62,14 @@ std::pair<int, int> FrameBuffer::size() const
     return std::make_pair(this->width(), this->height());
 }
 
+QColor FrameBuffer::getPixelColor(int x, int y) const
+{
+    // 检查坐标是否在范围内
+    if (x < 0 || x >= width() || y < 0 || y >= height()) {
+        return QColor();
+    }
+    
+    // 返回 (x, y) 位置的像素颜色
+    return m_color_buffer->pixelColor(x, y); // 使用 QImage 的 pixelColor 方法
+}
+
