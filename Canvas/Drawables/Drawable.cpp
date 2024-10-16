@@ -75,26 +75,23 @@ void Drawable::drawSeedFiller(const Pixel &start, const QColor &fillColor)
     auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
 
-    // 获取起始像素的颜色
     QColor targetColor = gpu->getPixelColor(start.x(), start.y());
 
-    std::queue<Pixel> pixelsQueue; // 使用队列进行广度优先搜索
-    Pixels pixels; // 用于存储将要填充的像素
-    std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false)); // 标记访问过的像素
+    std::queue<Pixel> pixelsQueue;
+    Pixels pixels;
+    std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false));
 
-    pixelsQueue.push(start); // 将起始点加入队列
-    visited[start.x()][start.y()] = true; // 标记起始点已访问
+    pixelsQueue.push(start);
+    visited[start.x()][start.y()] = true;
 
     while (!pixelsQueue.empty()) {
-        Pixel current = pixelsQueue.front(); // 获取当前像素
-        pixelsQueue.pop(); // 从队列中移除当前像素
+        Pixel current = pixelsQueue.front();
+        pixelsQueue.pop();
 
-        // 填充当前像素为传入的填充颜色
         Pixel filledPixel = current;
         filledPixel.setColor(fillColor);
-        pixels.append(filledPixel); // 将已填充的像素加入像素列表
+        pixels.append(filledPixel);
 
-        // 检查四个方向（上、下、左、右）
         std::vector<std::pair<int, int>> neighbors = {
             {current.x(), current.y() - 1}, // 上
             {current.x(), current.y() + 1}, // 下
@@ -105,23 +102,18 @@ void Drawable::drawSeedFiller(const Pixel &start, const QColor &fillColor)
         for (auto [nx, ny] : neighbors) {
             // 检查是否在图像边界内
             if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                // 从 GPU 缓冲区获取邻居像素的颜色
                 QColor neighborColor = gpu->getPixelColor(nx, ny);
 
                 // 如果相邻像素未访问过，且其颜色与目标颜色相同，则加入队列
                 if (!visited[nx][ny] && neighborColor == targetColor) {
-                    pixelsQueue.push(Pixel(nx, ny, neighborColor)); // 使用实际颜色创建邻居像素
-                    visited[nx][ny] = true; // 标记为已访问
+                    pixelsQueue.push(Pixel(nx, ny, neighborColor));
+                    visited[nx][ny] = true;
                 }
             }
         }
     }
-
-    // 一次性将所有填充的像素绘制到屏幕上
     gpu->drawPixels(pixels);
-    
-    // 绘制完成后，清空与当前填充相关的状态和队列
-    pixelsQueue = std::queue<Pixel>();  // 清空队列
-    visited.clear();  // 清空访问标记
+    pixelsQueue = std::queue<Pixel>();
+    visited.clear();
 }
 
