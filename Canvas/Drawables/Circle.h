@@ -7,7 +7,7 @@ class Circle : public Fillable
 {
     friend class Filler;
 public:
-    Circle(int pixel_size, Shader *shader = nullptr);
+    Circle(int pixel_size, Style style, Shader *shader = nullptr);
     void draw() override;
     void drawBorder() override;
     void processMousePressEvent(QMouseEvent *event) override;

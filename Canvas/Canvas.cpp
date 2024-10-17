@@ -46,6 +46,12 @@ void Canvas::setCurrentDrawablePixelSize(int pixel_size)
     if (m_current_drawing) { m_current_drawing->setPixelSize(pixel_size); }
 }
 
+void Canvas::setCurrentDrawableStyle(int style)
+{
+    m_style = style;
+    if (m_current_drawing) { m_current_drawing->setStyle(static_cast<Drawable::Style>(style)); }
+}
+
 void Canvas::setCurrentShader(int shader_index)
 {
     if (shader_index >= m_shaders.size() or shader_index < 0) {
@@ -141,7 +147,7 @@ void Canvas::createDrawable()
         m_current_drawing = nullptr;
     }
     if (not m_pen_down) { return; }
-    m_current_drawing = Drawable::create(static_cast<Drawable::Type>(m_drawable_type), m_pixel_size);
+    m_current_drawing = Drawable::create(static_cast<Drawable::Type>(m_drawable_type), m_pixel_size, static_cast<Drawable::Style>(m_style));
     connect(m_current_drawing, &Drawable::finished, this, &Canvas::onPaintingFinished);
 }
 

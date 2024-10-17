@@ -5,7 +5,7 @@ class Rect : public Fillable
 {
     friend class Filler;
 public:
-    Rect(int pixel_size, bool filled = false, Shader *shader = nullptr);
+    Rect(int pixel_size, Style style, Shader *shader = nullptr);
     void draw() override;
     void drawBorder() override;
     void processMousePressEvent(QMouseEvent *event) override;

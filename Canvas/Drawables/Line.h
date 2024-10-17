@@ -6,7 +6,7 @@
 class Line : public Drawable
 {
 public:
-    Line(int pixel_size);
+    Line(int pixel_size, Style style);
     void draw() override;
     void drawBorder() override;
     void processMousePressEvent(QMouseEvent *event) override;

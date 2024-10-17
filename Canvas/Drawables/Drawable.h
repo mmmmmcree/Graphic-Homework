@@ -18,7 +18,12 @@ public:
         RECT,
         POLYGON, 
     };
-    static Drawable *create(Type type, int pixel_size);
+    enum Style {
+        SOLID,
+        DASHED,
+        DOTTED,
+    };
+    static Drawable *create(Type type, int pixel_size, Style style);
 public:
     virtual void draw() = 0;
     virtual void drawBorder() = 0;
@@ -27,13 +32,17 @@ public:
     virtual void processMouseReleaseEvent(QMouseEvent *event) = 0;
     virtual bool fillable() { return false; }
     void setPixelSize(int pixel_size);
+    void setStyle(Style style);
 protected:
-    void drawLine(const Pixel &start, const Pixel &end, int pixel_size);
-    void drawCircle(const Pixel &center, int radius, int pixel_size);
-    void drawCircleArc(const Pixel &center, int radius, float start_angle, float end_angle, int pixel_size, bool reversed = false);
-    void drawRect(const Pixel &start, const Pixel &end, int pixel_size);
+    void drawLine(const Pixel &start, const Pixel &end, int pixel_size, Style style);
+    void drawCircle(const Pixel &center, int radius, int pixel_size, Style style);
+    void drawCircleArc(const Pixel &center, int radius, float start_angle, float end_angle, int pixel_size, Style style, bool reversed = false);
+    void drawRect(const Pixel &start, const Pixel &end, int pixel_size, Style style);
+private:
+    Pixels pixelsStyled(const Pixels &pixels, Style style);
 signals:
     void finished();
 protected:
     int m_pixel_size = 5;
+    Style m_style = SOLID;
 };

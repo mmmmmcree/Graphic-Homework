@@ -1,21 +1,22 @@
 #include "Line.h"
 
-Line::Line(int pixel_size)
+Line::Line(int pixel_size, Style style)
 {
     this->setPixelSize(pixel_size);
+    this->setStyle(style);
     m_start = m_end = {-1, -1, globalColor()};
 }
 
 void Line::draw()
 {
     if (this->uninitialized()) { return; }
-    Drawable::drawLine(m_start, m_end, m_pixel_size);
+    Drawable::drawLine(m_start, m_end, m_pixel_size, m_style);
 }
 
 void Line::drawBorder()
 {
     Pixel start(m_start.x(), m_start.y(), Qt::cyan), end(m_end.x(), m_end.y(), Qt::cyan);
-    Drawable::drawLine(start, end, m_pixel_size + 3);
+    Drawable::drawLine(start, end, m_pixel_size + 3, SOLID);
 }
 
 void Line::processMousePressEvent(QMouseEvent *event)

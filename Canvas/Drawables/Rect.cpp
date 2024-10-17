@@ -2,9 +2,10 @@
 
 
 
-Rect::Rect(int pixel_size, bool filled, Shader *shader)
+Rect::Rect(int pixel_size, Style style, Shader *shader)
 {
     this->setPixelSize(pixel_size);
+    this->setStyle(style);
     m_shader = shader;
     m_start = m_end = {-1, -1, globalColor()};
 }
@@ -12,14 +13,14 @@ Rect::Rect(int pixel_size, bool filled, Shader *shader)
 void Rect::draw()
 {
     if (this->uninitialized()) { return; }
-    this->drawRect(m_start, m_end, m_pixel_size);
+    this->drawRect(m_start, m_end, m_pixel_size, m_style);
     m_filler.fill(this, m_shader);
 }
 
 void Rect::drawBorder()
 {
     Pixel start = {m_start.x(), m_start.y(), Qt::cyan}, end = {m_end.x(), m_end.y(), Qt::cyan};
-    this->drawRect(start, end, m_pixel_size + 3);
+    this->drawRect(start, end, m_pixel_size + 3, SOLID);
 }
 
 void Rect::processMousePressEvent(QMouseEvent *event)

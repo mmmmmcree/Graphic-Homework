@@ -6,6 +6,7 @@
 #include <QSpinBox>
 #include <QColorDialog>
 #include <QPushButton>
+#include <QCheckBox>
 #include "Color.h"
 
 CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
@@ -13,8 +14,11 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     QToolBar *toolbar = new QToolBar(this);
     toolbar->setFixedHeight(25);
     QPushButton *color_selector = new QPushButton("Color Selector", this);
+    QCheckBox *use_gcolor_checkbox = new QCheckBox("", this);
     drawable_type_selector = new QComboBox(this);
     drawable_type_selector->addItems({"Line", "Circle", "CircleArc", "Rectangle", "Polygon"});
+    QComboBox *drawable_style_selector = new QComboBox(this);
+    drawable_style_selector->addItems({"Solid", "Dashed", "Dotted"});
     QSpinBox *pixel_size_selector = new QSpinBox(this);
     pixel_size_selector->setRange(1, 20);
     QComboBox *shader_selector = new QComboBox(this);
@@ -28,8 +32,11 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     QPushButton *fill_button = new QPushButton("Fill", this);
     QPushButton *unfill_button = new QPushButton("Unfill", this);
     toolbar->addWidget(color_selector);
+    toolbar->addWidget(use_gcolor_checkbox);
     toolbar->addSeparator();
     toolbar->addWidget(drawable_type_selector);
+    toolbar->addSeparator();
+    toolbar->addWidget(drawable_style_selector);
     toolbar->addSeparator();
     toolbar->addWidget(pixel_size_selector);
     toolbar->addSeparator();
@@ -50,10 +57,11 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     layout->addWidget(toolbar);
     layout->addWidget(canvas);
     this->setLayout(layout);
-    QColorDialog *color_dialog = new QColorDialog(this);
+    color_dialog = new QColorDialog(this);
     connect(color_selector, &QPushButton::clicked, color_dialog, &QColorDialog::show);
     connect(color_dialog, &QColorDialog::currentColorChanged, canvas, &setGlobalColor);
     connect(drawable_type_selector, &QComboBox::currentIndexChanged, canvas, &Canvas::setCurrentDrawableType);
+    connect(drawable_style_selector, &QComboBox::currentIndexChanged, canvas, &Canvas::setCurrentDrawableStyle);
     connect(pixel_size_selector, &QSpinBox::valueChanged, canvas, &Canvas::setCurrentDrawablePixelSize);
     connect(shader_selector, &QComboBox::currentIndexChanged, canvas, &Canvas::setCurrentShader);
     connect(pen_down_button, &QPushButton::toggled, canvas, [=](bool checked) {
@@ -71,8 +79,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
         drawable_selector->setValue(0);
     });
     connect(fill_button, &QPushButton::clicked, canvas, [=] {
-        // canvas->setSelectedDrawableFilled(true, true);
-        canvas->setSelectedDrawableFilled(true, false);
+        canvas->setSelectedDrawableFilled(true, use_gcolor_checkbox->isChecked());
     });
     connect(unfill_button, &QPushButton::clicked, canvas, [=] {
         canvas->setSelectedDrawableFilled(false);
@@ -98,5 +105,6 @@ void CanvasWrapper::keyPressEvent(QKeyEvent * event)
     }
     switch(event->key()) {
         case Qt::Key_Return : { pen_down_button->click(); } break;
+        case Qt::Key_C : { color_dialog->show(); } break;
     }
 }

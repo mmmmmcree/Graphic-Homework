@@ -5,7 +5,7 @@
 class CircleArc : public Drawable
 {
 public:
-    CircleArc(int pixel_size);
+    CircleArc(int pixel_size, Style style);
     void draw() override;
     void drawBorder();
     void processMousePressEvent(QMouseEvent *event) override;

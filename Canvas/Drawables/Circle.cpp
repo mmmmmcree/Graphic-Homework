@@ -1,9 +1,10 @@
 #include "Circle.h"
 
-Circle::Circle(int pixel_size, Shader *shader)
+Circle::Circle(int pixel_size, Style style, Shader *shader)
 {
     m_shader = shader;
     this->setPixelSize(pixel_size);
+    this->setStyle(style);
     m_x = m_y = -1;
     m_radius = 0;
 }
@@ -11,13 +12,13 @@ Circle::Circle(int pixel_size, Shader *shader)
 void Circle::draw()
 {
     if (this->uninitialized()) { return; }
-    Drawable::drawCircle({m_x, m_y, m_color}, m_radius, m_pixel_size);
+    Drawable::drawCircle({m_x, m_y, m_color}, m_radius, m_pixel_size, m_style);
     m_filler.fill(this, m_shader);
 }
 
 void Circle::drawBorder()
 {
-    Drawable::drawCircle({m_x, m_y, Qt::cyan}, m_radius + 1, m_pixel_size + 2);
+    Drawable::drawCircle({m_x, m_y, Qt::cyan}, m_radius + 1, m_pixel_size + 2, SOLID);
 }
 
 void Circle::processMousePressEvent(QMouseEvent *event)

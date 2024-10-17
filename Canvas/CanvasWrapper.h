@@ -5,6 +5,7 @@
 #include <QSpinBox>
 #include <QComboBox>
 #include <QPushButton>
+#include <QColorDialog>
 
 class CanvasWrapper : public QWidget
 {
@@ -17,4 +18,5 @@ private:
     QComboBox *drawable_type_selector;
     QSpinBox *drawable_selector;
     QPushButton *pen_down_button;
+    QColorDialog *color_dialog;
 };
