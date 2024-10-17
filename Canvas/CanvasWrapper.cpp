@@ -14,7 +14,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     toolbar->setFixedHeight(25);
     QPushButton *color_selector = new QPushButton("Color Selector", this);
     drawable_type_selector = new QComboBox(this);
-    drawable_type_selector->addItems({"Line", "Circle", "CircleArc", "Rectangle", "FilledRectangle"});
+    drawable_type_selector->addItems({"Line", "Circle", "CircleArc", "Rectangle", "Polygon"});
     QSpinBox *pixel_size_selector = new QSpinBox(this);
     pixel_size_selector->setRange(1, 20);
     QComboBox *shader_selector = new QComboBox(this);
@@ -71,11 +71,13 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
         drawable_selector->setValue(0);
     });
     connect(fill_button, &QPushButton::clicked, canvas, [=] {
-        canvas->setSelectedDrawableFilled(true, true);
+        // canvas->setSelectedDrawableFilled(true, true);
+        canvas->setSelectedDrawableFilled(true, false);
     });
     connect(unfill_button, &QPushButton::clicked, canvas, [=] {
-        canvas->setSelectedDrawableFilled(false, true);
+        canvas->setSelectedDrawableFilled(false);
     });
+    pen_down_button->click();
 }
 
 void CanvasWrapper::wheelEvent(QWheelEvent *event)

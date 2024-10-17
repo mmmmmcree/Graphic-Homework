@@ -35,6 +35,16 @@ void Filler::fill(Circle * circle, Shader * shader)
     GPU::get()->drawPixels(pixels);
 }
 
+void Filler::fill(POlygon *polygon, Shader *shader) {
+    if (not m_enabled) { return; }
+    Pixels pixels = Raster::filledPolygon(polygon->m_pixels);
+    if (shader) { shader->fragment(pixels); }
+    if (not shader and m_color) {
+        for (auto &pixel : pixels) { pixel.setColor(*m_color); }
+    }
+    GPU::get()->drawPixels(pixels);
+}
+
 void Filler::useGlobalColor(bool use_golor)
 {
     if (use_golor) { m_color = new QColor(globalColor()); }

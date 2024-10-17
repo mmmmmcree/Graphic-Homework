@@ -1,5 +1,6 @@
 #include "Drawable.h"
 #include "Drawables.h"
+#include "Polygon.h"
 
 Drawable *Drawable::create(Type type, int pixel_size)
 {
@@ -8,7 +9,7 @@ Drawable *Drawable::create(Type type, int pixel_size)
         case CIRCLE: return new Circle(pixel_size);
         case CIRCLE_ARC: return new CircleArc(pixel_size);
         case RECT: return new Rect(pixel_size, false);
-        case FILLED_RECT: return new Rect(pixel_size, true, GPU::get()->currentShader());
+        case POLYGON: return new POlygon(pixel_size, false);
     }
     return nullptr;
 }

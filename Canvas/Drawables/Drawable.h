@@ -16,7 +16,7 @@ public:
         CIRCLE,
         CIRCLE_ARC,
         RECT,
-        FILLED_RECT,
+        POLYGON, 
     };
     static Drawable *create(Type type, int pixel_size);
 public:

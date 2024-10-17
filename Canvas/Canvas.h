@@ -24,7 +24,7 @@ public slots:
     void penDown(bool down);
     void selectDrawable(int index);
     void deleteSelectedDrawable();
-    void setSelectedDrawableFilled(bool filled, bool use_gcolor);
+    void setSelectedDrawableFilled(bool filled, bool use_gcolor = false);
 private slots:
     void onPaintingFinished();
 private:

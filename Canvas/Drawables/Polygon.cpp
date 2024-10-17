@@ -1,0 +1,53 @@
+#include "Polygon.h"
+
+POlygon::POlygon(int pixel_size, bool filled, Shader *shader)
+{
+    this->setPixelSize(pixel_size);
+    m_last_pixel = {-1, -1, globalColor()};
+}
+
+void POlygon::draw()
+{
+    if (m_pixels.empty()) { return; }
+    for (int i = 0, n = m_pixels.size() - 1; i < n; i++) {
+        Drawable::drawLine(m_pixels[i], m_pixels[i + 1], m_pixel_size);
+    }
+    if (m_finished) {
+        Drawable::drawLine(m_pixels[0], m_pixels.back(), m_pixel_size);
+    } else {
+        Drawable::drawLine(m_last_pixel, m_pixels.back(), m_pixel_size);
+    }
+    m_filler.fill(this, m_shader);
+}
+
+void POlygon::drawBorder()
+{
+    for (int i = 0, n = m_pixels.size(); i < n; i++) {
+        Pixel start = m_pixels[i]; start.setColor(Qt::cyan);
+        Pixel end = m_pixels[(i + 1) % n]; end.setColor(Qt::cyan);
+        Drawable::drawLine(start, end, m_pixel_size + 3);
+    }
+}
+
+void POlygon::processMousePressEvent(QMouseEvent *event)
+{
+    auto [x, y] = event->pos();
+    if (event->button() == Qt::LeftButton) {
+        m_pixels.push_back(Pixel(x, y, globalColor()));
+    }
+    if (event->button() == Qt::RightButton) {
+        if (m_pixels.size() < 3) { return; }
+        m_finished = true;
+        emit finished();
+    }
+}
+
+void POlygon::processMouseMoveEvent(QMouseEvent *event)
+{
+    auto [x, y] = event->pos();
+    m_last_pixel = Pixel(x, y, globalColor());
+}
+
+void POlygon::processMouseReleaseEvent(QMouseEvent *event)
+{
+}

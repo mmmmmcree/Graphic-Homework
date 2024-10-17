@@ -61,6 +61,12 @@ void Canvas::paintEvent(QPaintEvent *event)
     auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
     gpu->clearColor(globalBackgroundColor());
+    // Pixel p1(100, 100, Qt::red);
+    // Pixel p2(200, 200, Qt::green);
+    // Pixel p3(100, 200, Qt::blue);
+    // Pixel p4(200, 100, Qt::blue);
+    // auto pixels = Raster::filledPolygon({p1, p2, p3, p4});
+    // gpu->drawPixels(pixels);
     auto seleted_drawable = this->selectedDrawable();
     if (seleted_drawable) {
         seleted_drawable->drawBorder();
