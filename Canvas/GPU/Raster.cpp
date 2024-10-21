@@ -196,18 +196,24 @@ Pixels Raster::eightCirclePoints(const Pixel &p)
     return result;
 }
 
+
 Pixel Raster::deCastelijus(const Pixels &points, float t)
 {
     if (points.empty()) { return Pixel(); }
     int n = points.size();
-    Pixels dp = points;
+    struct PixelF { float x, y; QColor color; };
+    QList<PixelF> dp(n);
+    for (int i = 0, n = points.size(); i < n; ++i) {
+        auto &[x, y, color] = dp[i];
+        x = points[i].x(); y = points[i].y();
+        color = points[i].color();
+    }
     for (int k = 1; k < n; ++k) {
         for (int i = 0; i < n - k; ++i) {
-            float x = (1 - t) * dp[i].x() + t * dp[i + 1].x();
-            float y = (1 - t) * dp[i].y() + t * dp[i + 1].y();
-            dp[i] = lerp(dp[i], dp[i + 1], 1 - t);
-            dp[i].setXY(x, y);
+            dp[i].x = (1 - t) * dp[i].x + t * dp[i + 1].x;
+            dp[i].y = (1 - t) * dp[i].y + t * dp[i + 1].y;
+            dp[i].color = lerp(dp[i].color, dp[i + 1].color, 1 - t);
         }
     }
-    return dp[0];
+    return Pixel(dp[0].x, dp[0].y, dp[0].color);
 }
