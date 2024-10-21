@@ -48,7 +48,3 @@ void POlygon::processMouseMoveEvent(QMouseEvent *event)
     auto [x, y] = event->pos();
     m_last_pixel = Pixel(x, y, globalColor());
 }
-
-void POlygon::processMouseReleaseEvent(QMouseEvent *event)
-{
-}

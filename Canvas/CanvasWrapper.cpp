@@ -20,7 +20,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     color_palette = createColorPalette();
     drawable_type_selector = new ElaComboBox(this);
     drawable_type_selector->setFixedHeight(25);
-    drawable_type_selector->addItems({"Point", "Line", "Circle", "CircleArc", "Rectangle", "Polygon", "Bezier Curve"});
+    drawable_type_selector->addItems({"Point", "Line", "Circle", "CircleArc", "Rectangle", "Polygon", "Bezier Curve", "BSpline Curve"});
     ElaComboBox *drawable_style_selector = new ElaComboBox(this);
     drawable_style_selector->setFixedHeight(25);
     drawable_style_selector->addItems({"Solid", "Dashed", "Dotted"});

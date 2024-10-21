@@ -3,10 +3,10 @@
 #include "Drawable.h"
 #include "Point.h"
 
-class Bezier : public Drawable
+class BSpline : public Drawable
 {
 public:
-    Bezier(int pixel_size);
+    BSpline(int pixel_size);
     void draw() override;
     void drawBorder() override;
     void processMousePressEvent(QMouseEvent *event) override;

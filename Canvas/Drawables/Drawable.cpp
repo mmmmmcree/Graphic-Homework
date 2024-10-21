@@ -12,8 +12,13 @@ Drawable *Drawable::create(Type type, int pixel_size, Style style)
         case RECT: return new Rect(pixel_size, style);
         case POLYGON: return new POlygon(pixel_size, style);
         case BEZIER: return new Bezier(pixel_size);
+        case BSPLINE: return new BSpline(pixel_size);
     }
     return nullptr;
+}
+
+void Drawable::processMouseReleaseEvent(QMouseEvent *event)
+{
 }
 
 void Drawable::setPixelSize(int pixel_size)

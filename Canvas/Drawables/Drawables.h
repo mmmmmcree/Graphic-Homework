@@ -5,3 +5,4 @@
 #include "Rect.h"
 #include "Polygon.h"
 #include "Bezier.h"
+#include "BSpline.h"

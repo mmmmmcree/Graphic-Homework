@@ -179,6 +179,19 @@ Pixels Raster::bezierCurve(const Pixels &control_points, int steps)
     return result;
 }
 
+Pixels Raster::BSpline(const Pixels &control_points, int steps)
+{
+    Pixels points;
+    for (float t = 0.0f, dt = 1.0f / steps; t <= 1.0f; t += dt) {
+        points.push_back(deBoor(control_points, t));
+    }
+    Pixels result;
+    for (int i = 0, n = points.size() - 1; i < n; ++i) {
+        result.append(lineBresenham(points[i], points[i + 1]));
+    }
+    return result;
+}
+
 Pixels Raster::eightCirclePoints(const Pixel &p)
 {
     Pixels result; result.reserve(8);
@@ -199,21 +212,59 @@ Pixels Raster::eightCirclePoints(const Pixel &p)
 
 Pixel Raster::deCastelijus(const Pixels &points, float t)
 {
-    if (points.empty()) { return Pixel(); }
+    if (points.empty()) { return Pixel(-1, -1, {}); }
     int n = points.size();
-    struct PixelF { float x, y; QColor color; };
     QList<PixelF> dp(n);
-    for (int i = 0, n = points.size(); i < n; ++i) {
-        auto &[x, y, color] = dp[i];
-        x = points[i].x(); y = points[i].y();
-        color = points[i].color();
-    }
+    for (int i = 0, n = points.size(); i < n; ++i) { dp[i] = points[i].toPixelF(); }
     for (int k = 1; k < n; ++k) {
         for (int i = 0; i < n - k; ++i) {
-            dp[i].x = (1 - t) * dp[i].x + t * dp[i + 1].x;
-            dp[i].y = (1 - t) * dp[i].y + t * dp[i + 1].y;
-            dp[i].color = lerp(dp[i].color, dp[i + 1].color, 1 - t);
+            dp[i] = lerp(dp[i], dp[i + 1], 1 - t);
         }
     }
-    return Pixel(dp[0].x, dp[0].y, dp[0].color);
+    return dp[0].toPixel();
 }
+
+Pixel Raster::deBoor(const Pixels &control_points, float u)
+{
+    int n = control_points.size();
+    int p = n - 1;
+    int m = n + p + 1;
+    QList<float> knots(m);
+    for (int i = 0; i <= p; ++i) { knots[i] = 0.0f; }
+    for (int i = p + 1; i <= n; ++i) { knots[i] = static_cast<float>(i - p); }
+    for (int i = n + 1; i < m; ++i) { knots[i] = static_cast<float>(n - p); }
+    int k = std::distance(knots.begin(), std::upper_bound(knots.begin(), knots.end(), u)) - 1;
+    QList<PixelF> dp(p + 1);
+    for (int i = 0; i <= p; ++i) { dp[i] = control_points[i + k - p].toPixelF(); }
+    for (int r = 1; r <= p; ++r) {
+        for (int i = k, j = p; i >= k - p + r; --i, --j) {
+            float alpha = u - knots[i];
+            float dev = knots[i + p + 1 - r] - knots[i];
+            alpha = (dev != 0.0f)? alpha / dev : 0.0f;
+            dp[j] = lerp(dp[j - 1], dp[j], 1.0f - alpha);
+        }
+    }
+    return dp[p].toPixel();
+}
+
+// QList<float> Raster::chordLengthKnots(const Pixels &control_points)
+// {
+//     int n = control_points.size();
+//     int p = n - 1;
+//     QList<float> knots(n + p + 1);
+//     for (int i = 0; i <= p; ++i) { knots[i] = 0.0f; }
+//     float total_length = 0.0f;
+//     QList<float> chord_lengths(n - 1);
+//     for (int i = 1; i < n; ++i) {
+//         float dist = sqrt(pow(control_points[i].x() - control_points[i - 1].x(), 2) + pow(control_points[i].y() - control_points[i - 1].y(), 2)); // 假设有 distanceTo 函数
+//         chord_lengths[i - 1] = dist;
+//         total_length += dist;
+//     }
+//     float accumulated_length = 0.0f;
+//     for (int i = p + 1; i < n; ++i) {
+//         accumulated_length += chord_lengths[i - p - 1];
+//         knots[i] = accumulated_length / total_length; // 归一化节点
+//     }
+//     for (int i = n; i <= n + p; ++i) { knots[i] = 1.0f; }
+//     return knots;
+// }

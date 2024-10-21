@@ -19,6 +19,7 @@ public:
         RECT,
         POLYGON, 
         BEZIER,
+        BSPLINE,
     };
     enum Style {
         SOLID,
@@ -31,7 +32,7 @@ public:
     virtual void drawBorder() = 0;
     virtual void processMousePressEvent(QMouseEvent *event) = 0;
     virtual void processMouseMoveEvent(QMouseEvent *event) = 0;
-    virtual void processMouseReleaseEvent(QMouseEvent *event) = 0;
+    virtual void processMouseReleaseEvent(QMouseEvent *event);
     virtual bool fillable() { return false; }
     void setPixelSize(int pixel_size);
     void setStyle(Style style);

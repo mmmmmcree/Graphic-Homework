@@ -10,7 +10,10 @@ struct Raster
     static Pixels circleArcMidPoint(const Pixel &center, int radius, float start_angle, float end_angle, bool reversed = false);
     static Pixels filledPolygon(Pixels points);
     static Pixels bezierCurve(const Pixels &control_points, int steps = 100);
+    static Pixels BSpline(const Pixels &control_points, int steps = 100);
 private:
     static Pixels eightCirclePoints(const Pixel &p);
     static Pixel deCastelijus(const Pixels &control_points, float t);
+    static Pixel deBoor(const Pixels &control_points, float u);
+    // static QList<float> chordLengthKnots(const Pixels &control_points);
 };

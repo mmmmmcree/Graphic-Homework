@@ -12,7 +12,6 @@ public:
     void drawBorder() override;
     void processMousePressEvent(QMouseEvent *event) override;
     void processMouseMoveEvent(QMouseEvent *event) override;
-    void processMouseReleaseEvent(QMouseEvent *event) override;
 private:
     Pixels m_pixels;
     Pixel m_last_pixel;

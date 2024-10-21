@@ -1,12 +1,12 @@
-#include "Bezier.h"
+#include "BSpline.h"
 
-Bezier::Bezier(int pixel_size)
+BSpline::BSpline(int pixel_size)
 {
     this->setPixelSize(pixel_size);
     m_last_pixel = {-1, -1, globalColor()};
 }
 
-void Bezier::draw()
+void BSpline::draw()
 {
     if (m_control_points.empty()) { return; }
     if (not m_finished) {
@@ -18,10 +18,10 @@ void Bezier::draw()
     }
     Pixels control_points(m_control_points.size());
     for (int i = 0, n = m_control_points.size(); i < n; i++) { control_points[i] = m_control_points[i].pixel(); }
-    GPU::get()->drawPixels(Raster::bezierCurve(control_points, 300));
+    GPU::get()->drawPixels(Raster::BSpline(control_points, 300));
 }
 
-void Bezier::drawBorder()
+void BSpline::drawBorder()
 {
     for (auto &point : m_control_points) {
         point.draw();
@@ -31,7 +31,7 @@ void Bezier::drawBorder()
     }
 }
 
-void Bezier::processMousePressEvent(QMouseEvent *event)
+void BSpline::processMousePressEvent(QMouseEvent *event)
 {
     auto [x, y] = event->position();
     if (not m_finished) {
@@ -48,7 +48,7 @@ void Bezier::processMousePressEvent(QMouseEvent *event)
     //todo 否则可以改变控制点的位置
 }
 
-void Bezier::processMouseMoveEvent(QMouseEvent *event)
+void BSpline::processMouseMoveEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();
     m_last_pixel = Pixel(x, y, globalColor());
