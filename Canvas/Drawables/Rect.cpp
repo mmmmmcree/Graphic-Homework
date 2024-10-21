@@ -25,6 +25,7 @@ void Rect::drawBorder()
 
 void Rect::processMousePressEvent(QMouseEvent *event)
 {
+    if (event->button() != Qt::LeftButton) { return; }
     auto [x, y] = event->pos();
     if (this->uninitialized()) {
         m_start = m_end = {x, y, globalColor()};
@@ -41,6 +42,7 @@ void Rect::processMouseMoveEvent(QMouseEvent *event)
 
 void Rect::processMouseReleaseEvent(QMouseEvent *event)
 {
+    if (event->button() != Qt::LeftButton) { return; }
     if (m_draw_step) { return; }
     emit finished();
 }

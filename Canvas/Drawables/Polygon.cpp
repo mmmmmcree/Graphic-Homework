@@ -36,7 +36,7 @@ void POlygon::processMousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         m_pixels.push_back(Pixel(x, y, globalColor()));
     }
-    if (event->button() == Qt::RightButton) {
+    if (event->button() == Qt::MiddleButton) {
         if (m_pixels.size() < 3) { return; }
         m_finished = true;
         emit finished();

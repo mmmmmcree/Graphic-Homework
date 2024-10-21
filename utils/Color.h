@@ -26,3 +26,5 @@ const QColor &globalColor();
 const QColor &globalBackgroundColor();
 
 void setGlobalColor(const QColor &color);
+
+void setGlobalBackgroundColor(const QColor &color);

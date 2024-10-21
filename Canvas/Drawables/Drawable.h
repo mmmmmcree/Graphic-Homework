@@ -12,11 +12,13 @@ class Drawable : public QObject
     Q_OBJECT
 public:
     enum Type {
+        POINT,
         LINE,
         CIRCLE,
         CIRCLE_ARC,
         RECT,
         POLYGON, 
+        BEZIER,
     };
     enum Style {
         SOLID,

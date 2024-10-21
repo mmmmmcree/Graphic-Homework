@@ -2,11 +2,41 @@
 #include "my_math.h"
 #include <qmath.h>
 #include "GPU.h"
+#include "Clipper.h"
 
 
-Pixels Raster::lineBresenham(const Pixel &p1, const Pixel &p2)
+Pixels Raster::lineMidPoint(const Pixel & p1, const Pixel & p2)
 {
     Pixels result;
+    auto [x1, y1] = p1.xy();
+    auto [x2, y2] = p2.xy();
+    int dx = abs(x2 - x1), dy = abs(y2 - y1);
+    int step_x = (x1 < x2) ? 1 : -1, step_y = (y1 < y2) ? 1 : -1;
+    bool use_x_step = (dx > dy);
+    int a = -abs(y1 - y2), b = abs(x2 - x1);
+    if (not use_x_step) { std::swap(a, b); a = -a; b = -b; }
+    int d1 = 2 * a, d2 = 2 * (a + b), d = 2 * a + b;
+    int n = (use_x_step) ? dx : dy;
+    int x = x1, y = y1;
+    for (int i = 0; i < n; ++i) {
+        Pixel pixel = lerp(p1, p2, (n - i) / static_cast<float>(n));
+        pixel.setXY(x, y);
+        result.emplace_back(pixel);
+        if (d < 0) {
+            x += step_x; y += step_y; d += d2;
+        } else {
+            d += d1;
+            use_x_step ? x += step_x : y += step_y;
+        }
+    }
+    return result;
+}
+
+Pixels Raster::lineBresenham(Pixel p1, Pixel p2)
+{
+    Pixels result;
+    if (Clipper::clipCS(p1, p2)) { return result; }
+    // if (Clipper::clipMidPoint(p1, p2)) { return result; }
     auto [x1, y1] = p1.xy();
     auto [x2, y2] = p2.xy();
     int dx = abs(x2 - x1), dy = abs(y2 - y1);
@@ -21,10 +51,10 @@ Pixels Raster::lineBresenham(const Pixel &p1, const Pixel &p2)
         pixel.setXY(x, y);
         result.emplace_back(pixel);
         if (p >= 0) {
-            if (use_x_step) { y += step_y; } else { x += step_x; }
+            use_x_step ? y += step_y : x += step_x;
             p -= 2 * dx;
         } 
-        if (use_x_step) { x += step_x; } else { y += step_y; }
+        use_x_step ? x += step_x : y += step_y;
         p += 2 * dy;
     }
     return result;
@@ -42,20 +72,18 @@ Pixels Raster::circleMidPoint(const Pixel &center, int radius, bool filled)
             --y;
         }
         Pixels pixels = eightCirclePoints(Pixel(y, x, center.color()));
-        if (not filled) {
-            result.append(pixels);
-            continue;
-        }
-        for (int i = 0; i < 8; i += 2) {
-            for (int j = 0; j < 2; ++j) {
-                auto &pixel = pixels[i + j];
-                pixel.setUV(normalize<float>(pixel.x(), -radius, radius), normalize<float>(pixel.y(), -radius, radius));
-            }
-            result.append(lineBresenham(pixels[i], pixels[i + 1]));
-        }
+        result.append(pixels);
     }
     for (auto &pixel : result) {
+        pixel.setUV(normalize<float>(pixel.x(), -radius, radius), normalize<float>(pixel.y(), -radius, radius));
         pixel.setXY(center.x() + pixel.x(), center.y() + pixel.y());
+    }
+    if (not filled) { return result; }
+    for (int i = 0, n = result.size(); i < n; i += 2) {
+        for (int j = 0; j < 2; ++j) {
+            auto &pixel = result[i + j];
+        }
+        result.append(lineBresenham(result[i], result[i + 1]));
     }
     return result;
 }
@@ -73,7 +101,7 @@ Pixels Raster::circleArcMidPoint(const Pixel &center, int radius, float start_an
     return result;
 }
 
-Pixels Raster::filledPolygon(const Pixels &points)
+Pixels Raster::filledPolygon(Pixels points)
 {
     struct PolygonPoint
     {
@@ -95,6 +123,7 @@ Pixels Raster::filledPolygon(const Pixels &points)
         float x, dx;
         Pixel floor, ceil;
     };
+    points = Clipper::clipPolygonSH(points);
     int x_min, y_min, x_max, y_max;
     x_min = y_min = std::numeric_limits<int>::max();
     x_max = y_max = std::numeric_limits<int>::lowest();
@@ -137,6 +166,19 @@ Pixels Raster::filledPolygon(const Pixels &points)
     return result;
 }
 
+Pixels Raster::bezierCurve(const Pixels &control_points, int steps)
+{
+    Pixels points;
+    for (float t = 0.0f, dt = 1.0f / steps; t <= 1.0f; t += dt) {
+        points.push_back(deCastelijus(control_points, t));
+    }
+    Pixels result;
+    for (int i = 0, n = points.size() - 1; i < n; ++i) {
+        result.append(lineBresenham(points[i], points[i + 1]));
+    }
+    return result;
+}
+
 Pixels Raster::eightCirclePoints(const Pixel &p)
 {
     Pixels result; result.reserve(8);
@@ -152,4 +194,20 @@ Pixels Raster::eightCirclePoints(const Pixel &p)
     result.emplace_back(x, -y, p.color(), u, -v);
     result.emplace_back(-x, -y, p.color(), -u, -v);
     return result;
+}
+
+Pixel Raster::deCastelijus(const Pixels &points, float t)
+{
+    if (points.empty()) { return Pixel(); }
+    int n = points.size();
+    Pixels dp = points;
+    for (int k = 1; k < n; ++k) {
+        for (int i = 0; i < n - k; ++i) {
+            float x = (1 - t) * dp[i].x() + t * dp[i + 1].x();
+            float y = (1 - t) * dp[i].y() + t * dp[i + 1].y();
+            dp[i] = lerp(dp[i], dp[i + 1], 1 - t);
+            dp[i].setXY(x, y);
+        }
+    }
+    return dp[0];
 }

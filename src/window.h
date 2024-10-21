@@ -1,7 +1,8 @@
 #pragma once
 #include <QMainWindow>
+#include "Ela/ElaWindow.h"
 
-class window : public QMainWindow {
+class window : public ElaWindow {
     Q_OBJECT
 
 public:

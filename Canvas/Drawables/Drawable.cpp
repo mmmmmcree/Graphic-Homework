@@ -5,11 +5,13 @@
 Drawable *Drawable::create(Type type, int pixel_size, Style style)
 {
     switch (type) {
+        case POINT: return new Point(pixel_size);
         case LINE: return new Line(pixel_size, style);
         case CIRCLE: return new Circle(pixel_size, style);
         case CIRCLE_ARC: return new CircleArc(pixel_size, style);
         case RECT: return new Rect(pixel_size, style);
         case POLYGON: return new POlygon(pixel_size, style);
+        case BEZIER: return new Bezier(pixel_size);
     }
     return nullptr;
 }
@@ -28,6 +30,7 @@ void Drawable::drawLine(const Pixel &start, const Pixel &end, int pixel_size, St
 {
     float dx = end.x() - start.x(), dy = end.y() - start.y();
     float length = sqrt(dx * dx + dy * dy);
+    if (abs(length) < 1e-6) { return; }
     float ux = dx / length, uy = dy / length;
     Pixels pixels;
     for (int i = -pixel_size / 2; i <= pixel_size / 2; ++i) {

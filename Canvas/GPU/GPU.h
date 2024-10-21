@@ -21,6 +21,7 @@ public:
     void drawPixel(const Pixel &pixel);
     void drawPixels(const Pixels &pixels);
     void drawImage(int x, int y, const QImage &image);
+    void seedFill(const Pixel &seed);
 private:
     FrameBuffer m_frame_buffer;
     Shader *m_shader = nullptr;

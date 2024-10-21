@@ -11,8 +11,7 @@ Canvas::Canvas(QWidget * parent) : QWidget(parent)
     connect(timer, &QTimer::timeout, this, [this] { this->update(); });
     timer->start(1000 / 60);
     m_elapsed_timer.start();
-    m_shaders = {new SimpleShader(), new SimpleShader()};
-    m_shaders.resize(2);
+    m_shaders.resize(3);
     for (int i = 0, n = m_shaders.size(); i < n; ++i) {
         m_shaders[i] = new SimpleShader();
         m_shaders[i]->texture_unit = i;
@@ -67,12 +66,6 @@ void Canvas::paintEvent(QPaintEvent *event)
     auto &gpu = GPU::get();
     auto [width, height] = gpu->bufferSize();
     gpu->clearColor(globalBackgroundColor());
-    // Pixel p1(100, 100, Qt::red);
-    // Pixel p2(200, 200, Qt::green);
-    // Pixel p3(100, 200, Qt::blue);
-    // Pixel p4(200, 100, Qt::blue);
-    // auto pixels = Raster::filledPolygon({p1, p2, p3, p4});
-    // gpu->drawPixels(pixels);
     auto seleted_drawable = this->selectedDrawable();
     if (seleted_drawable) {
         seleted_drawable->drawBorder();
@@ -81,6 +74,7 @@ void Canvas::paintEvent(QPaintEvent *event)
         drawable->draw();
     }
     if (m_current_drawing) { m_current_drawing->draw(); }
+    if (m_seed.first and not m_pen_down) { gpu->seedFill(m_seed.second); }
     gpu->updateDevice(this);
 }
 
@@ -90,6 +84,13 @@ void Canvas::resizeEvent(QResizeEvent *event)
     GPU::get()->resize(width, height);
 }
 
+void Canvas::mouseDoubleClickEvent(QMouseEvent * event)
+{
+    auto [x, y] = event->position();
+    m_seed = std::make_pair(true, Pixel(x, y, globalColor()));
+    QTimer::singleShot(3000, [this] { this->m_seed.first = false; });
+}
+
 void Canvas::mousePressEvent(QMouseEvent *event)
 {
     if (m_current_drawing) { m_current_drawing->processMousePressEvent(event); }
@@ -97,6 +98,9 @@ void Canvas::mousePressEvent(QMouseEvent *event)
 
 void Canvas::mouseMoveEvent(QMouseEvent *event)
 {
+    auto [x, y] = event->pos();
+    auto [width, height] = GPU::get()->bufferSize();
+    emit mouseCoordinatesUpdated(x, height - y);
     if (m_current_drawing) { m_current_drawing->processMouseMoveEvent(event); }
 }
 
@@ -129,6 +133,14 @@ void Canvas::deleteSelectedDrawable()
     delete drawable; drawable = nullptr;
     emit drawablesSizeUpdated(m_drawables.size());
     m_selected_drawable_index = -1;
+}
+
+void Canvas::clearAllDrawables()
+{
+    for (auto drawable : m_drawables) {
+        delete drawable; drawable = nullptr;
+    }
+    m_drawables.clear();
 }
 
 void Canvas::setSelectedDrawableFilled(bool filled, bool use_gcolor)

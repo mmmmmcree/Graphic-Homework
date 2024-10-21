@@ -14,6 +14,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -25,6 +26,7 @@ public slots:
     void penDown(bool down);
     void selectDrawable(int index);
     void deleteSelectedDrawable();
+    void clearAllDrawables();
     void setSelectedDrawableFilled(bool filled, bool use_gcolor = false);
 private slots:
     void onPaintingFinished();
@@ -33,6 +35,7 @@ private:
     Drawable *selectedDrawable() const;
 signals:
     void drawablesSizeUpdated(size_t size);
+    void mouseCoordinatesUpdated(int x, int y);
 private:
     QElapsedTimer m_elapsed_timer;
     Drawable *m_current_drawing = nullptr;
@@ -43,4 +46,5 @@ private:
     int m_style = 0;
     bool m_pen_down = false;
     std::vector<Shader*> m_shaders;
+    std::pair<bool, Pixel> m_seed = {false, Pixel(0, 0, QColor(0, 0, 0))};
 };

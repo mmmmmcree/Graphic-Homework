@@ -21,6 +21,7 @@ void Line::drawBorder()
 
 void Line::processMousePressEvent(QMouseEvent *event)
 {
+    if (event->button() != Qt::LeftButton) { return; }
     auto [x, y] = event->pos();
     if (this->uninitialized()) {
        m_start = m_end = {x, y, globalColor()};
@@ -37,6 +38,7 @@ void Line::processMouseMoveEvent(QMouseEvent *event)
 
 void Line::processMouseReleaseEvent(QMouseEvent *event)
 {
+    if (event->button() != Qt::LeftButton) { return; }
     if (m_draw_step == 0) { emit finished(); }
 }
 

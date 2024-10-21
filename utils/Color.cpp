@@ -67,3 +67,8 @@ void setGlobalColor(const QColor &color)
 {
     g_color = color;
 }
+
+void setGlobalBackgroundColor(const QColor &color)
+{
+    g_background_color = color;
+}

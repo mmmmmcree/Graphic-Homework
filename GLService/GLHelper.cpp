@@ -21,3 +21,14 @@ QOpenGLShaderProgram * GLHelper::loadShader(const QString & name, const QString 
     if (not shader->link()) { qDebug() << shader->log(); }
     return shader;
 }
+
+void GLHelper::setShaderUniforms(QOpenGLShaderProgram *shader, const QList<std::pair<QString, Uniform>> &uniforms)
+{
+    shader->bind();
+    for (const auto &[name, uniform] : uniforms) {
+        std::visit([&](auto &&value) {
+            shader->setUniformValue(name.toStdString().c_str(), value);
+        }, uniform);
+    }
+    shader->release();
+}

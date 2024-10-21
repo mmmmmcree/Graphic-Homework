@@ -1,5 +1,7 @@
+#include "Point.h"
 #include "Line.h"
 #include "Circle.h"
 #include "CircleArc.h"
 #include "Rect.h"
 #include "Polygon.h"
+#include "Bezier.h"
