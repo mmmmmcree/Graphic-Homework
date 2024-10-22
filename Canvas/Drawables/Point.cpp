@@ -16,6 +16,7 @@ Point::Point(int pixel_size)
 {
     this->setPixelSize(pixel_size);
     m_x = m_y = -1;
+    m_color = globalColor();
 }
 
 void Point::draw()
