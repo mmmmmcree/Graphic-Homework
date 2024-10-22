@@ -1,5 +1,6 @@
 <RCC>
 <qresource prefix="">
+    <file>README.md</file>
     <file>res/icons/logo.png</file>
     <file>GLService/shaders/simple.vert</file>
     <file>GLService/shaders/simple.frag</file>
