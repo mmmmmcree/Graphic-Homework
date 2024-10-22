@@ -14,6 +14,7 @@ class Drawable : public QObject
 public:
     enum Type {
         LINE,
+        LINE_AND_RECT,
         CIRCLE,
         CIRCLE_ARC,
         RECT,

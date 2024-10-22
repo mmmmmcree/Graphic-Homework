@@ -14,7 +14,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     toolbar->setFixedHeight(25);
     QPushButton *color_selector = new QPushButton("Color Selector", this);
     drawable_type_selector = new QComboBox(this);
-    drawable_type_selector->addItems({"Line", "Circle", "CircleArc", "Rectangle", "FilledRectangle","Seed_Filler"});
+    drawable_type_selector->addItems({"Line", "Line_And_Rect", "Circle", "CircleArc", "Rectangle", "FilledRectangle","Seed_Filler"});
     QSpinBox *pixel_size_selector = new QSpinBox(this);
     pixel_size_selector->setRange(1, 20);
     QComboBox *shader_selector = new QComboBox(this);

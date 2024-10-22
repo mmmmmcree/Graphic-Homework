@@ -8,6 +8,7 @@ Drawable *Drawable::create(Type type, int pixel_size)
 {
     switch (type) {
         case LINE: return new Line(pixel_size);
+        case LINE_AND_RECT: return new LineAndRect(pixel_size);
         case CIRCLE: return new Circle(pixel_size);
         case CIRCLE_ARC: return new CircleArc(pixel_size);
         case RECT: return new Rect(pixel_size, false);
