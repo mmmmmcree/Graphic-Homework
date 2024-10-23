@@ -5,5 +5,4 @@ add_library(GLServiceLib ${GLService})
 include_directories(../include)
 target_link_libraries(
     GLServiceLib Qt6::Widgets Qt6::OpenGLWidgets
-    ../lib/assimp-vc143-mtd
 ) 

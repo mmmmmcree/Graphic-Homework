@@ -40,6 +40,7 @@ void POlygon::processMousePressEvent(QMouseEvent *event)
         if (m_pixels.size() < 3) { return; }
         m_finished = true;
         emit finished();
+        this->setRotatePivot(this->center().x(), this->center().y());
     }
 }
 
@@ -47,4 +48,13 @@ void POlygon::processMouseMoveEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();
     m_last_pixel = Pixel(x, y, globalColor());
+}
+
+QVector2D POlygon::center() const
+{
+    QVector2D center(0,0);
+    for (const auto &pixel : m_pixels) {
+        center += QVector2D(pixel.x(), pixel.y());
+    }
+    return center / m_pixels.size();
 }

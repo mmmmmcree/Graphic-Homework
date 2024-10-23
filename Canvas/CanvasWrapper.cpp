@@ -30,7 +30,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     pixel_size_selector->setRange(1, 20);
     ElaComboBox *shader_selector = new ElaComboBox(this);
     shader_selector->setFixedHeight(25);
-    shader_selector->addItems({"Happy Jumping", "Seascape", "simple3d", "None"});
+    shader_selector->addItems({"Happy Jumping", "Seascape", "None"});
     shader_selector->setCurrentText("None");
     pen_down_button = new ElaToggleButton("Pen Down", this);
     pen_down_button->setFixedSize(100, 25);
@@ -82,6 +82,7 @@ CanvasWrapper::CanvasWrapper(QWidget * parent) : QWidget(parent)
     context_menu->setAttribute(Qt::WA_Hover, true);
     context_menu->installEventFilter(this);
     connect(context_menu->addElaIconAction(ElaIconType::ArrowRotateLeft, "clear"), &QAction::triggered, canvas, &Canvas::clearAllDrawables);
+    connect(context_menu->addElaIconAction(ElaIconType::ArrowRotateLeft, "clear mutiple selection"), &QAction::triggered, canvas, &Canvas::clearMultipleSelection);
     connect(drawable_type_selector, &QComboBox::currentIndexChanged, canvas, &Canvas::setCurrentDrawableType);
     connect(drawable_style_selector, &QComboBox::currentIndexChanged, canvas, &Canvas::setCurrentDrawableStyle);
     connect(pixel_size_selector, &QSpinBox::valueChanged, canvas, &Canvas::setCurrentDrawablePixelSize);

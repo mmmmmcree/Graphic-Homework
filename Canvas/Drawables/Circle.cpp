@@ -41,7 +41,15 @@ void Circle::processMouseMoveEvent(QMouseEvent *event)
 
 void Circle::processMouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_draw_step == 0) { emit finished(); }
+    if (m_draw_step == 0) {
+        emit finished();
+        this->setRotatePivot(this->center().x(), this->center().y());
+    }
+}
+
+QVector2D Circle::center() const
+{
+    return QVector2D(m_x, m_y);
 }
 
 bool Circle::uninitialized() const

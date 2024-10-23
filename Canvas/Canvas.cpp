@@ -7,6 +7,7 @@
 Canvas::Canvas(QWidget * parent) : QWidget(parent)
 {
     this->setMouseTracking(true);
+    this->setFocusPolicy(Qt::StrongFocus);
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this] { this->update(); });
     timer->start(1000 / 60);
@@ -70,6 +71,9 @@ void Canvas::paintEvent(QPaintEvent *event)
     if (seleted_drawable) {
         seleted_drawable->drawBorder();
     }
+    for (const auto &drawable : m_multiple_selection) {
+        drawable->drawBorder();
+    }
     for (const auto &drawable : m_drawables) {
         drawable->draw();
     }
@@ -84,24 +88,58 @@ void Canvas::resizeEvent(QResizeEvent *event)
     GPU::get()->resize(width, height);
 }
 
-void Canvas::mouseDoubleClickEvent(QMouseEvent * event)
-{
-    auto [x, y] = event->position();
-    m_seed = std::make_pair(true, Pixel(x, y, globalColor()));
-    QTimer::singleShot(3000, [this] { this->m_seed.first = false; });
-}
-
 void Canvas::mousePressEvent(QMouseEvent *event)
 {
     if (m_current_drawing) { m_current_drawing->processMousePressEvent(event); }
+    if (m_pen_down) { return; }
+    auto [width, height] = GPU::get()->bufferSize();
+    auto [x, y] = event->position();
+    auto selected_drawable = this->selectedDrawable();
+    if (not selected_drawable) { 
+        for (int i = 0; i < m_drawables.size(); ++i) {
+            if (this->multipleSelect(QVector2D(x, y), m_drawables[i])) { break; }
+        }
+    } else if (selected_drawable and selected_drawable->isCurve()) {
+        auto curve = static_cast<BezierCurve*>(selected_drawable);
+        for (auto &point : curve->controlPoints()) {
+            if (this->multipleSelect(QVector2D(x, y), &point)) { break; }
+        }
+    }
+    if (event->button() == Qt::MiddleButton) {
+        for (auto selected : m_multiple_selection) {
+            if (m_transform_type & SETROTATEPIVOT) {
+                selected->setAbsoluteRotatePivot(x, y);
+            } else {
+                auto [cx, cy] = selected->center();
+                selected->setRotatePivot(cx, cy);
+            }
+        }
+    }
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event)
 {
-    auto [x, y] = event->pos();
+    auto [x, y] = event->position();
     auto [width, height] = GPU::get()->bufferSize();
     emit mouseCoordinatesUpdated(x, height - y);
     if (m_current_drawing) { m_current_drawing->processMouseMoveEvent(event); }
+    if (m_pen_down) { return; }
+    for (auto selected_drawable : m_multiple_selection) {
+        auto [prev_x, prev_y] = m_last_mouse_pos;
+        auto [cx, cy] = selected_drawable->transformedCenter();
+        float theta_diff = qAtan2(y - cy, x - cx) - qAtan2(prev_y - cy, prev_x - cx);
+        if (theta_diff > M_PI) theta_diff -= 2.0f * static_cast<float>(M_PI);
+        else if (theta_diff < -M_PI) theta_diff += 2.0f * static_cast<float>(M_PI);
+        float dx = x - prev_x, dy = y - prev_y;
+        if (m_transform_type & TRANSLATE) { selected_drawable->translate(dx, dy); }
+        if (m_transform_type & ROTATE) { selected_drawable->rotate(theta_diff * 6); }
+        if (m_transform_type & SCALE) {
+            auto [sx, sy] = selected_drawable->scale();
+            selected_drawable->setScale(sx + dx / 200.f, sy + dy / 200.f); 
+        }
+    }
+    m_last_mouse_pos = event->position();
+
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent *event)
@@ -109,11 +147,37 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event)
     if (m_current_drawing) { m_current_drawing->processMouseReleaseEvent(event); }
 }
 
+void Canvas::keyPressEvent(QKeyEvent * event)
+{
+    switch(event->key()) {
+        case Qt::Key_W: { m_transform_type |= TRANSLATE; break; }
+        case Qt::Key_E: { m_transform_type |= ROTATE; break; }
+        case Qt::Key_R: { m_transform_type |= SCALE; break; }
+        case Qt::Key_Q: { m_transform_type |= SETROTATEPIVOT; break; }
+        case Qt::Key_F: {
+            auto [x, y] = this->mapFromGlobal(QCursor::pos());
+            m_seed = std::make_pair(true, Pixel(x, y, globalColor()));
+            QTimer::singleShot(3000, [this] { this->m_seed.first = false; });
+        } break;
+    }
+}
+
+void Canvas::keyReleaseEvent(QKeyEvent * event)
+{
+    switch(event->key()) {
+        case Qt::Key_W: { m_transform_type &= ~TRANSLATE; break; }
+        case Qt::Key_E: { m_transform_type &= ~ROTATE; break; }
+        case Qt::Key_R: { m_transform_type &= ~SCALE; break; }
+        case Qt::Key_Q: { m_transform_type &= ~SETROTATEPIVOT; break; }
+    }
+}
+
 void Canvas::penDown(bool down)
 {
     m_pen_down = down;
     m_selected_drawable_index = -1;
     this->createDrawable();
+    if (m_pen_down) { m_multiple_selection.clear(); }
 }
 
 void Canvas::selectDrawable(int index)
@@ -141,6 +205,7 @@ void Canvas::clearAllDrawables()
         delete drawable; drawable = nullptr;
     }
     m_drawables.clear();
+    m_multiple_selection.clear();
 }
 
 void Canvas::setSelectedDrawableFilled(bool filled, bool use_gcolor)
@@ -163,9 +228,25 @@ void Canvas::createDrawable()
     connect(m_current_drawing, &Drawable::finished, this, &Canvas::onPaintingFinished);
 }
 
-Drawable *Canvas::selectedDrawable() const
+Drawable *Canvas::selectedDrawable()
 {
     if (m_selected_drawable_index < 0 or m_selected_drawable_index >= m_drawables.size())
     { return nullptr; }
     return m_drawables[m_selected_drawable_index];
+}
+
+bool Canvas::multipleSelect(const QVector2D & pos, Drawable * drawable)
+{
+    if (pos.distanceToPoint(drawable->transformedCenter()) > 30) { return false; }
+    if (m_multiple_selection.contains(drawable)) {
+        m_multiple_selection.erase(m_multiple_selection.find(drawable));
+    } else {
+        m_multiple_selection.insert(drawable);
+    }
+    return true;
+}
+
+void Canvas::clearMultipleSelection()
+{
+    m_multiple_selection.clear();
 }

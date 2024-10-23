@@ -11,14 +11,50 @@ Drawable *Drawable::create(Type type, int pixel_size, Style style)
         case CIRCLE_ARC: return new CircleArc(pixel_size, style);
         case RECT: return new Rect(pixel_size, style);
         case POLYGON: return new POlygon(pixel_size, style);
-        case BEZIER: return new Bezier(pixel_size);
-        case BSPLINE: return new BSpline(pixel_size);
+        case BEZIER: return new BezierCurve(pixel_size);
+        case BSPLINE: return new BSplineCurve(pixel_size);
     }
     return nullptr;
 }
 
 void Drawable::processMouseReleaseEvent(QMouseEvent *event)
 {
+}
+
+void Drawable::setParent(Drawable * parent)
+{
+    m_parent_transformer = &parent->m_transformer;
+}
+
+void Drawable::translate(float dx, float dy)
+{
+    m_transformer.translate(dx, dy);
+}
+
+void Drawable::rotate(float angle_radians)
+{
+    m_transformer.rotate(angle_radians);
+}
+
+QVector2D Drawable::scale() const
+{
+    return m_transformer.scale();
+}
+
+void Drawable::setScale(float sx, float sy)
+{
+    m_transformer.setScale(sx, sy);
+}
+
+void Drawable::setRotatePivot(float x, float y)
+{
+    m_transformer.setPivot(x, y);
+}
+
+void Drawable::setAbsoluteRotatePivot(float x, float y)
+{
+    QVector2D pivot = QVector2D(m_transformer.invertedMatrix() * QVector3D(x, y, 1.0f));
+    m_transformer.setPivot(pivot.x(), pivot.y());
 }
 
 void Drawable::setPixelSize(int pixel_size)
@@ -31,8 +67,36 @@ void Drawable::setStyle(Style style)
     m_style = style;
 }
 
-void Drawable::drawLine(const Pixel &start, const Pixel &end, int pixel_size, Style style)
+QVector2D Drawable::transformedCenter() const
 {
+    QVector2D result = this->center();
+    if (m_parent_transformer) { result = m_parent_transformer->matrix() * result; }
+    return m_transformer.matrix() * result;
+}
+
+void Drawable::drawPoint(Pixel center, int pixel_size)
+{
+    if (m_parent_transformer) {
+        center = m_parent_transformer->matrix() * center;
+    }
+    center = m_transformer.matrix() * center;
+    int r = pixel_size / 2;
+    for (int i = -r; i <= r; i++) {
+        for (int j = -r; j <= r; j++) {
+            GPU::get()->drawPixel(Pixel(center.x() + i, center.y() + j, center.color()));
+        }
+    }
+}
+
+void Drawable::drawLine(Pixel start, Pixel end, int pixel_size, Style style)
+{
+    const auto &matrix = m_transformer.matrix();
+    if (m_parent_transformer) {
+        start = m_parent_transformer->matrix() * start;
+        end = m_parent_transformer->matrix() * end;
+    }
+    start = matrix * start;
+    end = matrix * end;
     float dx = end.x() - start.x(), dy = end.y() - start.y();
     float length = sqrt(dx * dx + dy * dy);
     if (abs(length) < 1e-6) { return; }
@@ -47,8 +111,13 @@ void Drawable::drawLine(const Pixel &start, const Pixel &end, int pixel_size, St
     GPU::get()->drawPixels(pixels);
 }
 
-void Drawable::drawCircle(const Pixel &center, int radius, int pixel_size, Style style)
+void Drawable::drawCircle(Pixel center, int radius, int pixel_size, Style style)
 {
+    if (m_parent_transformer) {
+        center = m_parent_transformer->matrix() * center;
+    }
+    center = m_transformer.matrix() * center;
+    radius = m_transformer.scale().x() * radius;
     Pixels pixels;
     for (int i = -pixel_size / 2; i <= pixel_size / 2; ++i) {
         int r = radius + i;
@@ -58,8 +127,13 @@ void Drawable::drawCircle(const Pixel &center, int radius, int pixel_size, Style
     GPU::get()->drawPixels(pixels);
 }
 
-void Drawable::drawCircleArc(const Pixel &center, int radius, float start_angle, float end_angle, int pixel_size, Style style, bool reversed)
+void Drawable::drawCircleArc(Pixel center, int radius, float start_angle, float end_angle, int pixel_size, Style style, bool reversed)
 {
+    if (m_parent_transformer) {
+        center = m_parent_transformer->matrix() * center;
+    }
+    center = m_transformer.matrix() * center;
+    radius = m_transformer.scale().x() * radius;
     Pixels pixels;
     for (int i = -pixel_size / 2; i <= pixel_size / 2; ++i) {
         int r = radius + i;
@@ -69,7 +143,7 @@ void Drawable::drawCircleArc(const Pixel &center, int radius, float start_angle,
     GPU::get()->drawPixels(pixels);
 }
 
-void Drawable::drawRect(const Pixel &start, const Pixel &end, int pixel_size, Style style)
+void Drawable::drawRect(Pixel start, Pixel end, int pixel_size, Style style)
 {
     Pixel bottom_right(end.x(), start.y(), lerp(start.color(), end.color(), 0.5f));
     Pixel top_left(start.x(), end.y(), lerp(start.color(), end.color(), 0.5f));

@@ -38,13 +38,12 @@ void CircleArc::drawBorder()
 void CircleArc::processMousePressEvent(QMouseEvent *event)
 {
     auto [x, y] = event->pos();
-    if (event->button() == Qt::RightButton) { return; }
     if (m_draw_step == 3) {
         m_x = x;
         m_y = y;
         m_color = globalColor();
     }
-    m_reversed = (m_draw_step == 1 and event->button() == Qt::MiddleButton);
+    m_reversed = (m_draw_step == 1 and event->button() == Qt::RightButton);
     --m_draw_step;
 }
 
@@ -63,5 +62,13 @@ void CircleArc::processMouseMoveEvent(QMouseEvent *event)
 
 void CircleArc::processMouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_draw_step == 0) { emit finished(); }
+    if (m_draw_step == 0) {
+        emit finished();
+        this->setRotatePivot(this->center().x(), this->center().y());
+    }
+}
+
+QVector2D CircleArc::center() const
+{
+    return QVector2D(m_x, m_y);
 }

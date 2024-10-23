@@ -11,6 +11,7 @@ public:
     void processMousePressEvent(QMouseEvent *event) override;
     void processMouseMoveEvent(QMouseEvent *event) override;
     void processMouseReleaseEvent(QMouseEvent *event) override;
+    QVector2D center() const override;
 private:
     bool uninitialized();
 private:

@@ -39,7 +39,15 @@ void Line::processMouseMoveEvent(QMouseEvent *event)
 void Line::processMouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() != Qt::LeftButton) { return; }
-    if (m_draw_step == 0) { emit finished(); }
+    if (m_draw_step == 0) {
+        emit finished(); 
+        this->setRotatePivot(this->center().x(), this->center().y());
+    }
+}
+
+QVector2D Line::center() const
+{
+    return QVector2D ((m_start.x() + m_end.x()) / 2.0f,(m_start.y() + m_end.y()) / 2.0f);
 }
 
 bool Line::uninitialized() const

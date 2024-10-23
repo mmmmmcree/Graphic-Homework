@@ -60,15 +60,8 @@ struct PixelF
     float _x, _y;
     QColor _color;
 };
-// struct PixelF
-// {
-//     PixelF(float x, float y, const QColor& color) : _x(x), _y(y), _color(color) {}
-//     friend PixelF lerp(const PixelF& lhs, const PixelF& rhs, float t) {
-//         return PixelF(lerp(lhs._x, rhs._x, t), lerp(lhs._y, rhs._y, t), lerp(lhs._color, rhs._color, t));
-//     }
-//     Pixel toPixel() const { return Pixel(static_cast<int>(_x), static_cast<int>(_y), _color); }
-//     float _x, _y;
-//     QColor _color;
-// };
+
+
+Pixel operator*(const QMatrix3x3& m, const Pixel& p);
 
 using Pixels = QList<Pixel>;

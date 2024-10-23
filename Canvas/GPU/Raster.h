@@ -4,7 +4,7 @@
 
 struct Raster
 {
-    static Pixels lineMidPoint(const Pixel &p1, const Pixel &p2);
+    static Pixels lineMidPoint(Pixel p1, Pixel p2);
     static Pixels lineBresenham(Pixel p1, Pixel p2);
     static Pixels circleMidPoint(const Pixel &center, int radius, bool filled = false);
     static Pixels circleArcMidPoint(const Pixel &center, int radius, float start_angle, float end_angle, bool reversed = false);

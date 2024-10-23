@@ -5,9 +5,10 @@
 #include "Clipper.h"
 
 
-Pixels Raster::lineMidPoint(const Pixel & p1, const Pixel & p2)
+Pixels Raster::lineMidPoint(Pixel p1, Pixel p2)
 {
     Pixels result;
+    if (Clipper::clipMidPoint(p1, p2)) { return result; }
     auto [x1, y1] = p1.xy();
     auto [x2, y2] = p2.xy();
     int dx = abs(x2 - x1), dy = abs(y2 - y1);
@@ -36,7 +37,6 @@ Pixels Raster::lineBresenham(Pixel p1, Pixel p2)
 {
     Pixels result;
     if (Clipper::clipCS(p1, p2)) { return result; }
-    // if (Clipper::clipMidPoint(p1, p2)) { return result; }
     auto [x1, y1] = p1.xy();
     auto [x2, y2] = p2.xy();
     int dx = abs(x2 - x1), dy = abs(y2 - y1);

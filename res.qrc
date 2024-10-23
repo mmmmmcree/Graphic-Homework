@@ -1,12 +1,10 @@
 <RCC>
 <qresource prefix="">
-    <file>README.md</file>
+    <file>README.md</file> 
     <file>res/icons/logo.png</file>
     <file>GLService/shaders/simple.vert</file>
     <file>GLService/shaders/simple.frag</file>
     <file>GLService/shaders/seascape.frag</file>
     <file>GLService/shaders/happy_jumping.frag</file>
-    <file>GLService/shaders/simple3d.vert</file>
-    <file>GLService/shaders/simple3d.frag</file>
 </qresource>
 </RCC>

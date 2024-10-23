@@ -8,8 +8,6 @@
 #include <QElapsedTimer>
 #include <QImage>
 #include <QOffscreenSurface>
-#include "Camera.h"
-#include "ModelView.h"
 
 class TextureGenerator : public QObject, protected QOpenGLFunctions_4_5_Core
 {
@@ -31,7 +29,6 @@ private:
     QTimer *m_timer = nullptr;
     QOpenGLContext *m_context = nullptr;
     QOffscreenSurface *m_surface = nullptr;
-    Camera *m_camera = nullptr;
     struct ShaderInfo {
         ShaderInfo(QOpenGLShaderProgram *s, const QImage &t, bool a = false) :
             activated(a), shader(s), texture(t) {}

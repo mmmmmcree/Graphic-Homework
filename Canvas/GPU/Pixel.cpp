@@ -78,3 +78,13 @@ Pixel PixelF::toPixel() const
 {
     return Pixel(static_cast<int>(_x), static_cast<int>(_y), _color);
 }
+
+
+Pixel operator*(const QMatrix3x3 &m, const Pixel &p)
+{
+    QVector3D v(p.x(), p.y(), 1.0f);
+    v = m * v;
+    Pixel result = p;
+    result.setXY(static_cast<int>(v.x()), static_cast<int>(v.y()));
+    return result;
+}
