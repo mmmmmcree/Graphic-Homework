@@ -3,9 +3,9 @@
 #include "GPU.h"
 #include "TextureGenerator.h"
 
-
 Canvas::Canvas(QWidget * parent) : QWidget(parent)
 {
+    
     this->setMouseTracking(true);
     this->setFocusPolicy(Qt::StrongFocus);
     QTimer *timer = new QTimer(this);

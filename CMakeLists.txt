@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DSOURCE_DIR="${CMAKE_SOURCE_DIR}")
 find_package(Qt6 COMPONENTS Widgets REQUIRED) # Qt COMPONENTS
-aux_source_directory(./src srcs)
+aux_source_directory(./src srcs) 
 add_subdirectory(Canvas)
 add_subdirectory(utils)
 add_subdirectory(GLService)
